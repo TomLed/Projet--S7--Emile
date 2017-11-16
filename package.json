@@ -1,0 +1,18 @@
+{
+  "name": "roll_one_dice",
+  "version": "1.0.0",
+  "description": "A web page with a button to roll a dice",
+  "main": "randomRoll.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "nodemon": "^1.12.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gauthier",
+  "license": "ISC"
+}
