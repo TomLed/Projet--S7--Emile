@@ -1,0 +1,68 @@
+body{
+  background: LightSteelBlue;
+  font-family: 'Open Sans';
+  color: white;
+  padding: 3vh;
+}
+
+h1{
+  text-align: center;
+  font-size: 3em;
+}
+
+.dice-value{
+  height: 20vh;
+  width: 20vh;
+  background: white;
+  color: black;
+  text-align: center;
+  font-size: 4em;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dice-value p{
+  vertical-align: center;
+}
+
+#roll-button{
+  display: block;
+  background: white;
+  color: black;
+  font-size: 1.5em;
+  margin: 5vh auto;
+  padding: 3vh 5vh;
+  text-align: center;
+  width: auto;
+  text-decoration: none;
+}
+
+#roll-button:hover{
+  opacity:0.8;
+}
+
+.roll-checkbox{
+  display: block;
+  margin: 2vh auto;
+}
+
+#row-dices{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.dice-column{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#set{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
