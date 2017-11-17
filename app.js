@@ -19,5 +19,5 @@ app.use(express.static('public'));
 var io = socket(server);
 
 io.on('connection', function(socket){
-  emile.initGame(io, socket);
+  emile.initGame(io, socket); //fires the initGame function in emile.js
 });
