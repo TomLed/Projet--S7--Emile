@@ -95,6 +95,7 @@ function playerRoll(data){
   io.sockets.in(data.gameId).emit('playerRolled', data);
 }
 
+//Coucou Théo
 
 function playerShowResults(data){
   var room = io.nsps['/'].adapter.rooms[data.gameId];
