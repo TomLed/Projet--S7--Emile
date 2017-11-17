@@ -58,6 +58,6 @@ function playerRoll(){
     }
   }
   else {
-    io.sockets.in(gameId).emit('gameOver');
+    this.emit('gameOver');
   }
 }
