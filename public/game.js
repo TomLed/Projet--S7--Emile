@@ -60,3 +60,7 @@ socket.on('showResults', function(data){
     resultsWindow.innerHTML += '<p> Player ' + data.winnerName + ' won!</p>'
   }
 });
+
+socket.on('roomIsAlreadyFull', function(){
+  alert('The room you wish to join is already full!');
+})

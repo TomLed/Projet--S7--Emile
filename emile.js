@@ -44,32 +44,35 @@ function getRandomIntInclusive(min, max) {
 function playerStart(data){
   console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId );
 
-  var player = new Player(this.id, data.playerName, data.gameId);
+  if (!io.nsps['/'].adapter.rooms[data.gameId] || io.nsps['/'].adapter.rooms[data.gameId].length < 2){
+    this.join(data.gameId);
 
-  // Join the room
-  this.join(data.gameId);
+    var player = new Player(this.id, data.playerName, data.gameId);
 
-  // Look up the room ID in the Socket.IO manager object.
-  var room = io.nsps['/'].adapter.rooms[data.gameId];
-  if (!room.players){
-    room.players = [];
-  }
-  room.players.push(player);
-  console.log(room.players);
+    // Look up the room ID in the Socket.IO manager object.
+    var room = io.nsps['/'].adapter.rooms[data.gameId];
+    if (!room.players){
+      room.players = [];
+    }
+    room.players.push(player);
+    console.log(room.players);
 
-  console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
+    console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
 
-  // Emit an event notifying the clients that the player has joined the room.
-  io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
+    // Emit an event notifying the clients that the player has joined the room.
+    io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
 
-  if (room.length == 2){
-    io.sockets.in(data.gameId).emit('roomIsFull');
-    console.log('Room is full!');
+    if (room.length == 2){
+      io.sockets.in(data.gameId).emit('roomIsFull');
+      console.log('Room is full!');
+    }
+    else{
+      console.log('Room is not full!');
+    }
   }
   else{
-    console.log('Room is not full!');
+    this.emit('roomIsAlreadyFull');
   }
-
 }
 
 function getPlayerPosition(gameId, id){
