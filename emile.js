@@ -95,8 +95,6 @@ function playerRoll(data){
   io.sockets.in(data.gameId).emit('playerRolled', data);
 }
 
-//Coucou Théo
-
 function playerShowResults(data){
   var room = io.nsps['/'].adapter.rooms[data.gameId];
   if (room.players[0].value == room.players[1].value){ //if the values of the two dices are identical
