@@ -1,6 +1,8 @@
 // Make connection
 var socket = io.connect('http://localhost:4000');
 
+var diceValue = 0; //Necessary for displaying the correct dice value in three js canvas
+
 //Query DOM
 var resultsWindow,
     $doc = $(document);
@@ -55,7 +57,10 @@ $doc.on('click', '#btnGetResults', function(){
 
 //When the dice has been rolled by the server, it sends back its value which can be displayed on the client's screen
 socket.on('playerRolled', function (data){
-  resultsWindow.innerHTML += '<p> Player ' + data.playerName + ' got a <strong>' + data.value + '</strong>!</p>'
+  diceValue = data.value; // Needed for displaying dice value in three js
+  resultsWindow.innerHTML += '<p> Player ' + data.playerName + ' got a <strong>' + data.value + '</strong>!</p>';
+
+  chatWindow.scrollTop(chatWindow.get(0).scrollHeight);
 });
 
 //When the duel has been processed by the server, it sends back the name of the winner which can be displayed on the client's screen
@@ -66,6 +71,7 @@ socket.on('showResults', function(data){
   else {
     resultsWindow.innerHTML += '<p> Player ' + data.winnerName + ' won!</p>'
   }
+  chatWindow.scrollTop(chatWindow.get(0).scrollHeight);
 });
 
 //When a third player tries to join the room, it sends him an alert
