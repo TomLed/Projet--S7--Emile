@@ -1,5 +1,3 @@
-//Little test to see if it worked ! Will it work ? I don't know !
-
 var io;
 var gameSocket;
 

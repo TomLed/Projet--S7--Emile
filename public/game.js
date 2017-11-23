@@ -5,6 +5,7 @@ var diceValue = 0; //Necessary for displaying the correct dice value in three js
 
 //Query DOM
 var resultsWindow,
+    playerWaitingMessage,
     $doc = $(document);
 
 //Player variables
@@ -16,6 +17,7 @@ socket.on('connected', function (data){
   console.log(data.message);
   // Shows the subscription page
   $("#display-screen").html($("#join-game-template").html());
+  playerWaitingMessage = $("#playerWaitingMessage")[0];
 });
 
 //When the start button is clicked, a 'playerStart' event is sent to the server with data on the player
@@ -30,6 +32,8 @@ $doc.on('click', '#btnStart', function(){
 socket.on('playerJoinedRoom', function(data){
   //do something to the client side page
   console.log(data.playerName + ' joined the room');
+  playerWaitingMessage.innerHTML += '<p>' + data.playerName + ' joined the room ' + data.gameId + '.<br>Waiting for another player.</p>'
+  playerWaitingMessage.scrollTop = playerWaitingMessage.scrollHeight;
 });
 
 //When the room has 2 players in it, the game interface is displayed
@@ -59,8 +63,7 @@ $doc.on('click', '#btnGetResults', function(){
 socket.on('playerRolled', function (data){
   diceValue = data.value; // Needed for displaying dice value in three js
   resultsWindow.innerHTML += '<p> Player ' + data.playerName + ' got a <strong>' + data.value + '</strong>!</p>';
-
-  chatWindow.scrollTop(chatWindow.get(0).scrollHeight);
+  resultsWindow.scrollTop = resultsWindow.scrollHeight;
 });
 
 //When the duel has been processed by the server, it sends back the name of the winner which can be displayed on the client's screen
@@ -71,7 +74,7 @@ socket.on('showResults', function(data){
   else {
     resultsWindow.innerHTML += '<p> Player ' + data.winnerName + ' won!</p>'
   }
-  chatWindow.scrollTop(chatWindow.get(0).scrollHeight);
+  resultsWindow.scrollTop = resultsWindow.scrollHeight;
 });
 
 //When a third player tries to join the room, it sends him an alert
