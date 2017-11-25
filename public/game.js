@@ -43,12 +43,27 @@ socket.on('roomIsFull', function(){
   resultsWindow = $("#results")[0];
 });
 
+socket.on('playerResume', function(){
+  console.log('I resumed!');
+  $("#display-screen").html($("#play-game-template").html());
+  resultsWindow = $("#results")[0];
+});
+
 //When the roll button is clicked, a 'playerRoll' event is sent to the server
 $doc.on('click', '#btnRoll', function(){
   console.log('I clicked roll!');
   var data = {gameId: gameId, playerName: playerName};
   console.log(data);
   socket.emit('playerRoll', data);
+});
+
+//When the resume button is clicked, a 'playerResume' event is sent to the server
+$doc.on('click', '#btnResume', function(){
+  console.log('I clicked resume!');
+  data = {gameId: $('#inputGameId').val(), playerName: $('#inputPlayerName').val()};
+  gameId = data.gameId;
+  playerName = data.playerName;
+  socket.emit('playerResume', data);
 });
 
 //When the get results button is clicked, a 'playerWantsResults' event is sent to the server

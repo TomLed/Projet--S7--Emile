@@ -16,6 +16,11 @@ class Player{
     this.value = getRandomIntInclusive(1,6);
     return this.value;
   }
+
+  //The setId method changes the socket id of the player
+  setId(newId){
+    this.id = newId;
+  }
 }
 
 /**
@@ -31,6 +36,7 @@ exports.initGame = function(sio, socket){
 
     // Player Events
     gameSocket.on('playerStart', playerStart);
+    gameSocket.on('playerResume', playerResume);
     gameSocket.on('playerRoll', playerRoll);
     gameSocket.on('playerWantsResults', playerShowResults);
 }
@@ -77,19 +83,40 @@ function playerStart(data){
 }
 
 //This additionnal function helps us to know the position of the player we are interacting with in the players array.
-function getPlayerPosition(gameId, id){
+function getPlayerPosition(gameId, playerName){
   var room = io.nsps['/'].adapter.rooms[gameId];
-  if (room.players[0].id === id){
+  if (room.players[0].name === playerName){
     return 0;
   }
-  else{
+  else if(room.players[1].name === playerName){
     return 1;
+  }
+  else{
+    return -1; //This means the player is not part of the room
+  }
+}
+
+function playerResume(data){
+  console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId);
+  if (!io.nsps['/'].adapter.rooms[data.gameId]){
+    this.emit('notInThisRoom');
+  }
+  var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
+  var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
+  if (playerPosition === -1){
+    this.emit('notInThisRoom');
+  }
+  else{
+    this.join(data.gameId);
+    room.players[playerPosition].setId(this.id);
+    console.log('Player ' + data.playerName + ' rejoining game: ' + data.gameId);
+    this.emit('playerResume');
   }
 }
 
 //This function rolls the dice and sends back its value to the client
 function playerRoll(data){
-  var playerPosition = getPlayerPosition(data.gameId, this.id); //we get the player position in the array
+  var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
   var room = io.nsps['/'].adapter.rooms[data.gameId]; //we get the room
   data.value = room.players[playerPosition].roll(); //and knowing its position we can get the player to use its roll method
   io.sockets.in(data.gameId).emit('playerRolled', data);
