@@ -96,3 +96,8 @@ socket.on('showResults', function(data){
 socket.on('roomIsAlreadyFull', function(){
   alert('The room you wish to join is already full!');
 })
+
+//When a third player tries to join the room, it sends him an alert
+socket.on('changeName', function(data){
+  alert('Someone is already named ' + data.playerName + ' in the room you wish to join!');
+})
