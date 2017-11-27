@@ -51,15 +51,27 @@ function getRandomIntInclusive(min, max) {
 //This additionnal function helps us to know the position of the player we are interacting with in the players array.
 function getPlayerPosition(gameId, playerName){
   var room = io.nsps['/'].adapter.rooms[gameId];
-  if (room.players[0].name === playerName){
-    return 0;
+  var n = room.players.length
+  for (var i = 0; i < n; i++){
+    if (room.players[i].name === playerName){
+      return i; //There is only one player with the name playerName in the room so it works just fine
+    }
+}
+}
+
+//This additionnal function helps us to know if a player is in a room or not
+function getPlayerStatus(gameId, playerName){
+  //If the room is not empty, check the name of every player
+  if (room = io.nsps['/'].adapter.rooms[gameId]){
+    var room = io.nsps['/'].adapter.rooms[gameId];
+    var n = room.players.length
+    for (var i = 0; i < n; i++){
+      if (room.players[i].name === playerName){
+        return true;
+      }
+    }
   }
-  else if(room.players[1].name === playerName){
-    return 1;
-  }
-  else{
-    return -1; //This means the player is not part of the room
-  }
+  return false; //This means the player is not part of the room
 }
 
 //This function is fired when a player clicks the 'Start' button
@@ -69,7 +81,7 @@ function playerStart(data){
   //If there is currently zero or one player in the room
   if (!io.nsps['/'].adapter.rooms[data.gameId] || io.nsps['/'].adapter.rooms[data.gameId].length < 2){
 
-    if (io.nsps['/'].adapter.rooms[data.gameId] && getPlayerPosition(data.gameId, data.playerName) !== -1){
+    if (io.nsps['/'].adapter.rooms[data.gameId] && getPlayerStatus(data.gameId, data.playerName)){
       this.emit('changeName', data);
     }
     else{
@@ -102,21 +114,24 @@ function playerStart(data){
   }
 }
 
+//This function puts the player back in the game
 function playerResume(data){
   console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId);
-  if (!io.nsps['/'].adapter.rooms[data.gameId]){
-    this.emit('notInThisRoom');
-  }
-  var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
-  var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
-  if (playerPosition === -1){
+
+  var playerStatus = getPlayerStatus(data.gameId, data.playerName); //we ask if the player is inside the room
+
+  //If there's nobody in the room
+  if (!playerStatus){
     this.emit('notInThisRoom');
   }
   else{
-    this.join(data.gameId);
-    room.players[playerPosition].setId(this.id);
-    console.log('Player ' + data.playerName + ' rejoining game: ' + data.gameId);
-    this.emit('playerResume');
+  var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
+  var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
+
+  this.join(data.gameId);
+  room.players[playerPosition].setId(this.id);
+  console.log('Player ' + data.playerName + ' rejoining game: ' + data.gameId);
+  this.emit('playerResume');
   }
 }
 
@@ -128,6 +143,7 @@ function playerRoll(data){
   io.sockets.in(data.gameId).emit('playerRolled', data);
 }
 
+//This function show the final result of the duel when the 'Show results' button is clicked
 function playerShowResults(data){
   var room = io.nsps['/'].adapter.rooms[data.gameId];
   if (room.players[0].value == room.players[1].value){ //if the values of the two dices are identical
