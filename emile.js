@@ -9,7 +9,7 @@ class Player{
     this.name = name;
     this.game = gameId;
     this.value = 0;
-  }
+}
 
   //The roll method rolls the dice, stores its value in the object and returns it
   roll(){
