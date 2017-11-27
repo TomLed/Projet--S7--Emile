@@ -8,7 +8,7 @@ var emile = require('./emile');
 var app = express();
 
 var server = app.listen(4000, function (){
-  console.log('Currently listening to port 4000!')
+    console.log('Currently listening to port 4000!');
 });
 
 //Static files
@@ -19,5 +19,5 @@ app.use(express.static('public'));
 var io = socket(server);
 
 io.on('connection', function(socket){
-  emile.initGame(io, socket); //fires the initGame function in emile.js
+    emile.initGame(io, socket); //fires the initGame function in emile.js
 });
