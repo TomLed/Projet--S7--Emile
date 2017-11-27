@@ -1,7 +1,7 @@
 // Make connection
 var socket = io.connect('http://localhost:4000');
 
-var diceValue = 0; //Necessary for displaying the correct dice value in three js canvas
+var diceValue = 0; //Necessary to display the correct dice value in three js canvas
 
 //Query DOM
 var resultsWindow,
