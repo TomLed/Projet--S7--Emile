@@ -23,9 +23,18 @@ socket.on('connected', function (data){
 //When the start button is clicked, a 'playerStart' event is sent to the server with data on the player
 $doc.on('click', '#btnStart', function(){
     var data = {gameId: $('#inputGameId').val(), playerName: $('#inputPlayerName').val()};
-    gameId = data.gameId;
-    playerName = data.playerName;
-    socket.emit('playerStart', data);
+    //Before we start the game, we need to check if the player typed something in the two inputs
+    if (data.gameId === ''){
+        alert('Please type a room name!');
+    }
+    else if(data.playerName === ''){
+        alert('Please type a player name!');
+    }
+    else{
+        gameId = data.gameId;
+        playerName = data.playerName;
+        socket.emit('playerStart', data);
+    }
 });
 
 //When the player's request has been processed by the server, a message is sent to the client console
@@ -61,9 +70,17 @@ $doc.on('click', '#btnRoll', function(){
 $doc.on('click', '#btnResume', function(){
     console.log('I clicked resume!');
     var data = {gameId: $('#inputGameId').val(), playerName: $('#inputPlayerName').val()};
-    gameId = data.gameId;
-    playerName = data.playerName;
-    socket.emit('playerResume', data);
+    if (data.gameId === ''){
+        alert('Please type a room name!');
+    }
+    else if(data.playerName === ''){
+        alert('Please type a player name!');
+    }
+    else{
+        gameId = data.gameId;
+        playerName = data.playerName;
+        socket.emit('playerResume', data);
+    }
 });
 
 //When the get results button is clicked, a 'playerWantsResults' event is sent to the server
@@ -100,4 +117,8 @@ socket.on('roomIsAlreadyFull', function(){
 //When a third player tries to join the room, it sends him an alert
 socket.on('changeName', function(data){
     alert('Someone is already named ' + data.playerName + ' in the room you wish to join!');
+});
+
+socket.on('notInThisRoom', function(data){
+    alert('There is no player named ' + data.playerName + ' in the room ' + data.gameId + '!');
 });

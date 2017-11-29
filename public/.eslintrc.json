@@ -1,5 +1,5 @@
 {   "globals": {
-    "_diceValue": false
+    "_diceValue": true
     },
     "env": {
         "browser": true,

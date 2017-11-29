@@ -122,7 +122,11 @@ function playerResume(data){
 
     //If there's nobody in the room
     if (!playerStatus){
-        this.emit('notInThisRoom');
+        console.log('Player ' + data.playerName + ' failed to join game: ' + data.gameId);
+        this.emit('notInThisRoom', data);
+    }
+    else if(io.nsps['/'].adapter.rooms[data.gameId].length >= 2){
+        this.emit('roomIsAlreadyFull');
     }
     else{
         var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
