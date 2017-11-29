@@ -1,5 +1,6 @@
 {   "globals": {
-    "_diceValue": true
+    "_diceValue": true,
+    "Cookies": false
     },
     "env": {
         "browser": true,

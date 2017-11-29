@@ -15,7 +15,20 @@ var _diceValue = 0; //Necessary to display the correct dice value in three js ca
 //When the player connects to the website, the form is displayed on the web page and a message is sent to the client console
 socket.on('connected', function (data){
     console.log(data.message);
-    // Shows the subscription page
+    var cookie;
+    //if there is a cookie of a previously played game
+    if (Cookies.getJSON('playerData')){
+        console.log('There is a cookie!');
+        //Get the cookie
+        cookie = Cookies.getJSON('playerData');
+        //ALWAYS SAVE THE STATE IN THE FRONT-END, WOULD BE HELPFUL TO HAVE A SAVE STATE METHOD/FUNCTION
+        gameId = cookie.gameId;
+        playerName = cookie.playerName;
+        if (confirm('You have already a game going in the room ' + data.gameId + ' with the name ' + data.playerName + '. Do you want to resume this game?')){
+            socket.emit('playerResume', cookie);
+        }
+    }
+    //Show the subscription page
     $('#display-screen').html($('#join-game-template').html());
     playerWaitingMessage = $('#playerWaitingMessage')[0];
 });
@@ -46,7 +59,8 @@ socket.on('playerJoinedRoom', function(data){
 });
 
 //When the room has 2 players in it, the game interface is displayed
-socket.on('roomIsFull', function(){
+socket.on('roomIsFull', function(data){
+    Cookies.set('playerData', data);
     console.log('Room is full!');
     $('#display-screen').html($('#play-game-template').html());
     resultsWindow = $('#results')[0];

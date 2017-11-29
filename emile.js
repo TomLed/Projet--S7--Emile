@@ -101,7 +101,7 @@ function playerStart(data){
             io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
 
             if (room.length == 2){ //if the room is full
-                io.sockets.in(data.gameId).emit('roomIsFull'); //emit the roomIsFull event to start the game
+                io.sockets.in(data.gameId).emit('roomIsFull', data); //emit the roomIsFull event to start the game
                 console.log('Room is full!');
             }
             else{
