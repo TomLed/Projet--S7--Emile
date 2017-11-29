@@ -130,12 +130,17 @@ function playerResume(data){
     }
     else{
         var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
-        var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
+        if (!room.sockets[this.id]){
+            var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
 
-        this.join(data.gameId);
-        room.players[playerPosition].setId(this.id);
-        console.log('Player ' + data.playerName + ' rejoining game: ' + data.gameId);
-        this.emit('playerResume');
+            this.join(data.gameId);
+            room.players[playerPosition].setId(this.id);
+            console.log('Player ' + data.playerName + ' rejoining game: ' + data.gameId);
+            this.emit('playerResume');
+        }
+        else{
+            this.emit('alreadyInTheRoom', data);
+        }
     }
 }
 

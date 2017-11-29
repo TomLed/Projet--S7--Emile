@@ -1,8 +1,4 @@
 {
-    "globals": {
-        "io": false,
-        "THREE": false
-    },
     "env": {
         "node": true,
         "es6": true

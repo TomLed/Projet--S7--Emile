@@ -1,5 +1,7 @@
 {   "globals": {
     "_diceValue": true,
+    "io": false,
+    "THREE": false,
     "Cookies": false
     },
     "env": {

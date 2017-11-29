@@ -24,7 +24,7 @@ socket.on('connected', function (data){
         //ALWAYS SAVE THE STATE IN THE FRONT-END, WOULD BE HELPFUL TO HAVE A SAVE STATE METHOD/FUNCTION
         gameId = cookie.gameId;
         playerName = cookie.playerName;
-        if (confirm('You have already a game going in the room ' + data.gameId + ' with the name ' + data.playerName + '. Do you want to resume this game?')){
+        if (confirm('You have already a game going in the room ' + cookie.gameId + ' with the name ' + cookie.playerName + '. Do you want to resume this game?')){
             socket.emit('playerResume', cookie);
         }
     }
@@ -135,4 +135,8 @@ socket.on('changeName', function(data){
 
 socket.on('notInThisRoom', function(data){
     alert('There is no player named ' + data.playerName + ' in the room ' + data.gameId + '!');
+});
+
+socket.on('alreadyInTheRoom', function(data){
+    alert('Player ' + data.playerName + ' is already in the room ' + data.gameId + '. You cannot resume a game you are still playing in.');
 });
