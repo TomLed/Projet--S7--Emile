@@ -1,5 +1,4 @@
-var io;
-var gameSocket;
+var io, gameSocket, playerName, roomId;
 
 //We define a player object
 class Player{
@@ -28,14 +27,20 @@ class Player{
  *
  * @param sio The Socket.IO library
  * @param socket The socket object for the connected client.
+ * @param _playerName The nickname of the player
+ * @param _roomId The id of the room the player will play in
  */
-exports.initGame = function(sio, socket){
+exports.initGame = function(sio, socket, _playerName, _roomId){
     io = sio;
     gameSocket = socket;
+    playerName = _playerName;
+    roomId = _roomId;
     gameSocket.emit('connected', { message: 'You are connected!' });
 
+    //Fire the playerStart function
+    playerStart();
+
     // Player Events
-    gameSocket.on('playerStart', playerStart);
     gameSocket.on('playerResume', playerResume);
     gameSocket.on('playerRoll', playerRoll);
     gameSocket.on('playerWantsResults', playerShowResults);
@@ -75,19 +80,23 @@ function getPlayerStatus(gameId, playerName){
 }
 
 //This function is fired when a player clicks the 'Start' button
-function playerStart(data){
-    console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId );
+function playerStart(){
+    var data = {playerName: playerName, gameId: roomId};
+    console.log(data);
+    console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId);
 
     //If there is currently zero or one player in the room
     if (!io.nsps['/'].adapter.rooms[data.gameId] || io.nsps['/'].adapter.rooms[data.gameId].length < 2){
 
         if (io.nsps['/'].adapter.rooms[data.gameId] && getPlayerStatus(data.gameId, data.playerName)){
-            this.emit('changeName', data);
+            gameSocket.emit('changeName', data);
         }
         else{
-            this.join(data.gameId); //add this player to the room
+            console.log(io.nsps['/'].adapter.rooms);
+            gameSocket.join(data.gameId); //add this player to the room
+            console.log(io.nsps['/'].adapter.rooms);
 
-            var player = new Player(this.id, data.playerName, data.gameId); //created a player object for this player
+            var player = new Player(gameSocket.id, data.playerName, data.gameId); //created a player object for this player
 
             var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
             if (!room.players){
