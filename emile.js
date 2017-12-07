@@ -92,7 +92,7 @@ function playerStart(){
             gameSocket.emit('changeName', data);
         }
         else{
-            console.log(io.nsps['/'].adapter.rooms);
+            console.log(io);
             gameSocket.join(data.gameId); //add this player to the room
             console.log(io.nsps['/'].adapter.rooms);
 

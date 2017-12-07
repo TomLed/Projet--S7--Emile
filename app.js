@@ -12,6 +12,10 @@ var server = app.listen(4000, function (){
 });
 
 
+//Setting up the socket
+var io = socket(server);
+
+
 //Static files
 app.use('/styles', express.static('public/styles'));
 app.use('/tex', express.static('public/tex'));
@@ -28,9 +32,6 @@ app.get('/play/rooms/:roomId/players/:playerName', function(req, res){
     //Collect the room id and the player name
     var roomId = req.params.roomId;
     var playerName = req.params.playerName;
-
-    //Setting up the socket
-    var io = socket(server);
 
     //Send the game page
     res.sendFile(__dirname + '/public/views/play.html');
