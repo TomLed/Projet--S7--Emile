@@ -82,44 +82,36 @@ function getPlayerStatus(gameId, playerName){
 //This function is fired when a player clicks the 'Start' button
 function playerStart(){
     var data = {playerName: playerName, gameId: roomId};
-    console.log(data);
     console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId);
 
     //If there is currently zero or one player in the room
     if (!io.nsps['/'].adapter.rooms[data.gameId] || io.nsps['/'].adapter.rooms[data.gameId].length < 2){
 
-        if (io.nsps['/'].adapter.rooms[data.gameId] && getPlayerStatus(data.gameId, data.playerName)){
-            gameSocket.emit('changeName', data);
+        gameSocket.join(data.gameId); //add this player to the room
+
+        var player = new Player(gameSocket.id, data.playerName, data.gameId); //created a player object for this player
+
+        var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
+        if (!room.players){
+            room.players = []; //creates an array with all the players in the room
+        }
+        room.players.push(player); //adds the player to the players' list
+
+        console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
+
+        // Emit an event notifying the clients that the player has joined the room.
+        io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
+
+        if (room.length == 2){ //if the room is full
+            io.sockets.in(data.gameId).emit('roomIsFull', data); //emit the roomIsFull event to start the game
+            console.log('Room is full!');
         }
         else{
-            console.log(io);
-            gameSocket.join(data.gameId); //add this player to the room
-            console.log(io.nsps['/'].adapter.rooms);
-
-            var player = new Player(gameSocket.id, data.playerName, data.gameId); //created a player object for this player
-
-            var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
-            if (!room.players){
-                room.players = []; //creates an array with all the players in the room
-            }
-            room.players.push(player); //adds the player to the players' list
-
-            console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
-
-            // Emit an event notifying the clients that the player has joined the room.
-            io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
-
-            if (room.length == 2){ //if the room is full
-                io.sockets.in(data.gameId).emit('roomIsFull', data); //emit the roomIsFull event to start the game
-                console.log('Room is full!');
-            }
-            else{
-                console.log('Room is not full!');
-            }
+            console.log('Room is not full!');
         }
     }
     else{
-        this.emit('roomIsAlreadyFull'); //if there are already 2 players in the room, emit the roomIsAlreadyFull event
+        gameSocket.emit('roomIsAlreadyFull'); //if there are already 2 players in the room, emit the roomIsAlreadyFull event
     }
 }
 
