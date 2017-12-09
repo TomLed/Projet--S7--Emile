@@ -4,7 +4,7 @@ $(function(){
 
 
     //Query DOM
-    var resultsWindow,
+    var resultsWindow = document.getElementById('results'),
         $doc = $(document);
 
     //Player variables
@@ -12,24 +12,28 @@ $(function(){
     var playerName;
 
 
+    socket.on('connected', function(data){
+        console.log('You are connected!');
+        //Set a 5-minute cookie to tell if the player is connected
+        var inFiveMinutes = new Date(new Date().getTime() + 5 * 60 * 1000);
+        Cookies.set('connected', '1', {expires: inFiveMinutes});
+        gameId = data.gameId;
+        playerName = data.playerName;
+    });
+
     //When the player's request has been processed by the server, a message is sent to the client console
     socket.on('playerJoinedRoom', function(data){
-        //do something to the client side page
         console.log(data.playerName + ' joined the room');
     });
 
     //When the room has 2 players in it, the game interface is displayed
     socket.on('roomIsFull', function(data){
-        Cookies.set('playerData', data);
+        //Cookies.set('playerData', data);
         console.log('Room is full!');
-        $('#display-screen').html($('#play-game-template').html());
-        resultsWindow = $('#results')[0];
     });
 
     socket.on('playerResume', function(){
         console.log('I resumed!');
-        $('#display-screen').html($('#play-game-template').html());
-        resultsWindow = $('#results')[0];
     });
 
     //When the roll button is clicked, a 'playerRoll' event is sent to the server
@@ -81,20 +85,6 @@ $(function(){
             resultsWindow.innerHTML += '<p> Player ' + data.winnerName + ' won!</p>';
         }
         resultsWindow.scrollTop = resultsWindow.scrollHeight;
-    });
-
-    //When a third player tries to join the room, it sends him an alert
-    socket.on('roomIsAlreadyFull', function(){
-        alert('The room you wish to join is already full!');
-    });
-
-    //When a third player tries to join the room, it sends him an alert
-    socket.on('changeName', function(data){
-        alert('Someone is already named ' + data.playerName + ' in the room you wish to join!');
-    });
-
-    socket.on('notInThisRoom', function(data){
-        alert('There is no player named ' + data.playerName + ' in the room ' + data.gameId + '!');
     });
 
     socket.on('alreadyInTheRoom', function(data){

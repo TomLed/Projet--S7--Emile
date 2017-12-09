@@ -1,3 +1,6 @@
+var getPlayerStatus = require('./getPlayerStatus');
+
+
 var io, gameSocket, playerName, roomId;
 
 //We define a player object
@@ -33,12 +36,33 @@ class Player{
 exports.initGame = function(sio, socket, _playerName, _roomId){
     io = sio;
     gameSocket = socket;
+    if (!(getPlayerStatus(io, _roomId, _playerName))){
+        playerName = _playerName;
+        roomId = _roomId;
+        gameSocket.emit('connected', {playerName: playerName, gameId: roomId});
+
+        //Fire the playerStart function
+        playerStart();
+
+        // Player Events
+        gameSocket.on('playerResume', playerResume);
+        gameSocket.on('playerRoll', playerRoll);
+        gameSocket.on('playerWantsResults', playerShowResults);
+    }
+    else{
+        console.log('Bis repetita');
+    }
+};
+
+exports.reinitGame = function(sio, socket, _playerName, _roomId){
+    io = sio;
+    gameSocket = socket;
     playerName = _playerName;
     roomId = _roomId;
-    gameSocket.emit('connected', { message: 'You are connected!' });
+    gameSocket.emit('connected', {playerName: playerName, gameId: roomId});
 
     //Fire the playerStart function
-    playerStart();
+    playerResume();
 
     // Player Events
     gameSocket.on('playerResume', playerResume);
@@ -62,21 +86,6 @@ function getPlayerPosition(gameId, playerName){
             return i; //There is only one player with the name playerName in the room so it works just fine
         }
     }
-}
-
-//This additionnal function helps us to know if a player is in a room or not
-function getPlayerStatus(gameId, playerName){
-    //If the room is not empty, check the name of every player
-    if (io.nsps['/'].adapter.rooms[gameId]){
-        var room = io.nsps['/'].adapter.rooms[gameId];
-        var n = room.players.length;
-        for (var i = 0; i < n; i++){
-            if (room.players[i].name === playerName){
-                return true;
-            }
-        }
-    }
-    return false; //This means the player is not part of the room
 }
 
 //This function is fired when a player clicks the 'Start' button
@@ -116,33 +125,17 @@ function playerStart(){
 }
 
 //This function puts the player back in the game
-function playerResume(data){
-    console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId);
+function playerResume(){
+    var data = {playerName: playerName, gameId: roomId};
+    console.log('Player ' + data.playerName + ' attempting to rejoin game: ' + data.gameId);
 
-    var playerStatus = getPlayerStatus(data.gameId, data.playerName); //we ask if the player is inside the room
+    var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
+    var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
 
-    //If there's nobody in the room
-    if (!playerStatus){
-        console.log('Player ' + data.playerName + ' failed to join game: ' + data.gameId);
-        this.emit('notInThisRoom', data);
-    }
-    else if(io.nsps['/'].adapter.rooms[data.gameId].length >= 2){
-        this.emit('roomIsAlreadyFull');
-    }
-    else{
-        var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
-        if (!room.sockets[this.id]){
-            var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
-
-            this.join(data.gameId);
-            room.players[playerPosition].setId(this.id);
-            console.log('Player ' + data.playerName + ' rejoining game: ' + data.gameId);
-            this.emit('playerResume');
-        }
-        else{
-            this.emit('alreadyInTheRoom', data);
-        }
-    }
+    gameSocket.join(data.gameId);
+    room.players[playerPosition].setId(gameSocket.id);
+    console.log('Player ' + data.playerName + ' rejoining game: ' + data.gameId);
+    gameSocket.emit('playerResume');
 }
 
 //This function rolls the dice and sends back its value to the client

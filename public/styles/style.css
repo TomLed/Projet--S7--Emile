@@ -97,7 +97,8 @@ input:focus {
 }
 
 #results,
-#playerWaitingMessage {
+#playerWaitingMessage,
+#pleaseChangeName {
   height: 100px;
   overflow: auto;
   margin-bottom: 10px;
