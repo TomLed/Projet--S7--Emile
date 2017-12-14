@@ -27,8 +27,7 @@ $(function(){
     });
 
     //When the room has 2 players in it, the game interface is displayed
-    socket.on('roomIsFull', function(data){
-        //Cookies.set('playerData', data);
+    socket.on('roomIsFull', function(){
         console.log('Room is full!');
     });
 

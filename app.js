@@ -2,7 +2,8 @@
 var express = require('express');
 var socket = require('socket.io');
 var emile = require('./emile');
-var getPlayerStatus = require('./getPlayerStatus');
+var Room = require('./Room');
+var Game = require('./Game');
 var cookieParser = require('cookie-parser');
 
 
@@ -26,41 +27,53 @@ app.use('/scripts', express.static('public/scripts'));
 app.use('/views', express.static('public/views'));
 
 
+var game = new Game();
+
+
 app.get('/join', function(req, res){
     res.sendFile(__dirname + '/public/views/join.html');
 });
 
 
 app.get('/play/rooms/:roomId/players/:playerName', function(req, res){
-    //Collect the room id and the player name
-    var roomId = req.params.roomId;
+    //Collect the player name and the room id
     var playerName = req.params.playerName;
+    var roomId = req.params.roomId;
 
-    if (getPlayerStatus(io, roomId, playerName)){
+    //If the room doesn't exist in the game
+    if (!game.rooms.includes(roomId)){
+        var room;
+        room = new Room(req.params.roomId); //Create the room
+        game.addRoom(room); //Add it to the game object
+    }
+
+    if (game.getRoom(roomId).getPlayerStatus(playerName)){
         //Send the change name page
         res.sendFile(__dirname + '/public/views/changeName.html');
     }
     else{
         //Send the game page
         res.sendFile(__dirname + '/public/views/play.html');
+        console.log(room);
 
         //Wait for the connection event
         io.on('connection', function(socket){
-            emile.initGame(io, socket, playerName, roomId); //fires the initGame function in emile.js
+            emile.initGame(io, socket, playerName, roomId, game); //fires the initGame function in emile.js
         });
     }
 });
 
 app.get('/replay/rooms/:roomId/players/:playerName', function(req, res){
-    //Collect the room id and the player name
-    var roomId = req.params.roomId;
+    //Collect the player name and the room id
     var playerName = req.params.playerName;
+    var roomId = req.params.roomId;
 
-    if (!getPlayerStatus(io, roomId, playerName)){
+    //If the room doesn't exist in the game or if the player is not inside it
+    if (!game.rooms.includes(roomId) || !game.getRoom(roomId).getPlayerStatus(playerName)){
         //Send the change name page
         res.sendFile(__dirname + '/public/views/notThere.html');
     }
-    else if(io.nsps['/'].adapter.rooms[roomId].length >= 2){
+    else if(game.getRoom(roomId).players.length >= 2){
         //Send the change name page
         res.sendFile(__dirname + '/public/views/roomAlreadyFull.html');
     }
@@ -70,7 +83,7 @@ app.get('/replay/rooms/:roomId/players/:playerName', function(req, res){
 
         //Wait for the connection event
         io.on('connection', function(socket){
-            emile.reinitGame(io, socket, playerName, roomId); //fires the reinitGame function in emile.js
+            emile.reinitGame(io, socket, playerName, roomId, game); //fires the reinitGame function in emile.js
         });
     }
 });

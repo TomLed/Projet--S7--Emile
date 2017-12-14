@@ -1,7 +1,4 @@
-var getPlayerStatus = require('./getPlayerStatus');
-
-
-var io, gameSocket, playerName, roomId;
+var io, gameSocket, playerName, room, game;
 
 //We define a player object
 class Player{
@@ -31,15 +28,17 @@ class Player{
  * @param sio The Socket.IO library
  * @param socket The socket object for the connected client.
  * @param _playerName The nickname of the player
- * @param _roomId The id of the room the player will play in
+ * @param _room The room the player will play in
  */
-exports.initGame = function(sio, socket, _playerName, _roomId){
+exports.initGame = function(sio, socket, _playerName, _roomId, _game){
     io = sio;
     gameSocket = socket;
-    if (!(getPlayerStatus(io, _roomId, _playerName))){
+    game = _game;
+
+    if (!_game.getRoom(_roomId).getPlayerStatus(_playerName)){
         playerName = _playerName;
-        roomId = _roomId;
-        gameSocket.emit('connected', {playerName: playerName, gameId: roomId});
+        room = game.getRoom(_roomId);
+        gameSocket.emit('connected', {playerName: playerName, gameId: room.id});
 
         //Fire the playerStart function
         playerStart();
@@ -54,12 +53,12 @@ exports.initGame = function(sio, socket, _playerName, _roomId){
     }
 };
 
-exports.reinitGame = function(sio, socket, _playerName, _roomId){
+exports.reinitGame = function(sio, socket, _playerName, _roomId, _game){
     io = sio;
     gameSocket = socket;
     playerName = _playerName;
-    roomId = _roomId;
-    gameSocket.emit('connected', {playerName: playerName, gameId: roomId});
+    room = _game.getRoom(_roomId);
+    gameSocket.emit('connected', {playerName: playerName, gameId: room.id});
 
     //Fire the playerStart function
     playerResume();
@@ -77,33 +76,18 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/* This additionnal function helps us to know the position of the player we are interacting with in the players array. */
-function getPlayerPosition(gameId, playerName){
-    var room = io.nsps['/'].adapter.rooms[gameId];
-    var n = room.players.length;
-    for (var i = 0; i < n; i++){
-        if (room.players[i].name === playerName){
-            return i; //There is only one player with the name playerName in the room so it works just fine
-        }
-    }
-}
 
 //This function is fired when a player clicks the 'Start' button
 function playerStart(){
-    var data = {playerName: playerName, gameId: roomId};
+    var data = {playerName: playerName, gameId: room.id};
     console.log('Player ' + data.playerName + ' attempting to join game: ' + data.gameId);
 
     //If there is currently zero or one player in the room
-    if (!io.nsps['/'].adapter.rooms[data.gameId] || io.nsps['/'].adapter.rooms[data.gameId].length < 2){
-
+    if (room.players.length < 2){
         gameSocket.join(data.gameId); //add this player to the room
 
         var player = new Player(gameSocket.id, data.playerName, data.gameId); //created a player object for this player
 
-        var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
-        if (!room.players){
-            room.players = []; //creates an array with all the players in the room
-        }
         room.players.push(player); //adds the player to the players' list
 
         console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
@@ -111,7 +95,7 @@ function playerStart(){
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
 
-        if (room.length == 2){ //if the room is full
+        if (room.players.length == 2){ //if the room is full
             io.sockets.in(data.gameId).emit('roomIsFull', data); //emit the roomIsFull event to start the game
             console.log('Room is full!');
         }
@@ -126,11 +110,10 @@ function playerStart(){
 
 //This function puts the player back in the game
 function playerResume(){
-    var data = {playerName: playerName, gameId: roomId};
+    var data = {playerName: playerName, gameId: room.id};
     console.log('Player ' + data.playerName + ' attempting to rejoin game: ' + data.gameId);
 
-    var room = io.nsps['/'].adapter.rooms[data.gameId]; //stores the room into a variable
-    var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
+    var playerPosition = room.getPlayerPosition(data.playerName); //we get the player position in the array
 
     gameSocket.join(data.gameId);
     room.players[playerPosition].setId(gameSocket.id);
@@ -140,15 +123,13 @@ function playerResume(){
 
 //This function rolls the dice and sends back its value to the client
 function playerRoll(data){
-    var playerPosition = getPlayerPosition(data.gameId, data.playerName); //we get the player position in the array
-    var room = io.nsps['/'].adapter.rooms[data.gameId]; //we get the room
+    var playerPosition = room.getPlayerPosition(data.playerName); //we get the player position in the array
     data.value = room.players[playerPosition].roll(); //and knowing its position we can get the player to use its roll method
     io.sockets.in(data.gameId).emit('playerRolled', data);
 }
 
 //This function show the final result of the duel when the 'Show results' button is clicked
 function playerShowResults(data){
-    var room = io.nsps['/'].adapter.rooms[data.gameId];
     if (room.players[0].value == room.players[1].value){ //if the values of the two dices are identical
         data.draw = true; //it's a draw
     }
