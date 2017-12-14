@@ -69,7 +69,7 @@ app.get('/replay/rooms/:roomId/players/:playerName', function(req, res){
     var roomId = req.params.roomId;
 
     //If the room doesn't exist in the game or if the player is not inside it
-    if (!game.rooms.includes(roomId) || !game.getRoom(roomId).getPlayerStatus(playerName)){
+    if (!game.rooms.includes(roomId) || !game.getRoom(roomId).getPlayerStatus(playerName)){ //PROBLEM HERE! 2 rooms with the same id, one empty, other full
         //Send the change name page
         res.sendFile(__dirname + '/public/views/notThere.html');
     }
