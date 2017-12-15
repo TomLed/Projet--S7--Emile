@@ -41,7 +41,7 @@ app.get('/play/rooms/:roomId/players/:playerName', function(req, res){
     var roomId = req.params.roomId;
 
     //If the room doesn't exist in the game
-    if (!game.rooms.includes(roomId)){
+    if (!game.exists(roomId)){
         var room;
         room = new Room(req.params.roomId); //Create the room
         game.addRoom(room); //Add it to the game object
@@ -54,7 +54,6 @@ app.get('/play/rooms/:roomId/players/:playerName', function(req, res){
     else{
         //Send the game page
         res.sendFile(__dirname + '/public/views/play.html');
-        console.log(room);
 
         //Wait for the connection event
         io.on('connection', function(socket){
@@ -69,13 +68,9 @@ app.get('/replay/rooms/:roomId/players/:playerName', function(req, res){
     var roomId = req.params.roomId;
 
     //If the room doesn't exist in the game or if the player is not inside it
-    if (!game.rooms.includes(roomId) || !game.getRoom(roomId).getPlayerStatus(playerName)){ //PROBLEM HERE! 2 rooms with the same id, one empty, other full
+    if (!game.exists(roomId) || !game.getRoom(roomId).getPlayerStatus(playerName)){
         //Send the change name page
         res.sendFile(__dirname + '/public/views/notThere.html');
-    }
-    else if(game.getRoom(roomId).players.length >= 2){
-        //Send the change name page
-        res.sendFile(__dirname + '/public/views/roomAlreadyFull.html');
     }
     else{
         //Send the game page
