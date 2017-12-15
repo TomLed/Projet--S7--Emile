@@ -1,89 +1,92 @@
-//Imports
+/*
+* npm init
+* npm install express --save
+* npm install socket.io --save
+* npm install nodemon -g
+* npm install cannon --save
+*/
+
+// Server requirements
 var express = require('express');
 var socket = require('socket.io');
-var emile = require('./emile');
-var Room = require('./Room');
-var Game = require('./Game');
 var cookieParser = require('cookie-parser');
 
 
-//Setting up the app
+// Game logic requirements
+var Game = require('./objects/Game');
+
+
+// Starting app
 var app = express();
 app.use(cookieParser());
 
-var server = app.listen(4000, function (){
-    console.log('Currently listening to port 4000!');
-});
 
-
-//Setting up the socket
+// Starting server and socket.io module
+var server = app.listen(4000, console.log('Currently listening to port 4000!'));
 var io = socket(server);
 
 
-//Static files
+// Folders the server uses
 app.use('/styles', express.static('public/styles'));
+app.use('/src', express.static('public/src'));
 app.use('/tex', express.static('public/tex'));
 app.use('/scripts', express.static('public/scripts'));
 app.use('/views', express.static('public/views'));
 
 
+// Initializing game logic
 var game = new Game();
 
 
-app.get('/join', function(req, res){
-    res.sendFile(__dirname + '/public/views/join.html');
+// When client asks for /join page
+app.get('/join', function(req, res) {
+  res.sendFile(__dirname + '/public/views/join.html');
 });
 
 
-app.get('/play/rooms/:roomId/players/:playerName', function(req, res){
-    //Collect the player name and the room id
-    var playerName = req.params.playerName;
-    var roomId = req.params.roomId;
+// When client asks for /play page (to either join a new game or resume one)
+app.get('/play/rooms/:roomId/players/:playerName', function(req, res) {
+  // Store request parameters
+  var name = req.params.playerName;
+  var id = req.params.roomId;
 
-    //If the room doesn't exist in the game
-    if (!game.rooms.includes(roomId)){
-        var room;
-        room = new Room(req.params.roomId); //Create the room
-        game.addRoom(room); //Add it to the game object
-    }
-
-    if (game.getRoom(roomId).getPlayerStatus(playerName)){
-        //Send the change name page
-        res.sendFile(__dirname + '/public/views/changeName.html');
-    }
-    else{
-        //Send the game page
+  // Does the room already exist?
+  if (game.rooms[id]) {
+    // Yes it does: is the player with the requested name in that room?
+    if (game.rooms[id].players[name]) {
+      // Yes he is: is he currenty connected? (does he have an active socket?)
+      if (game.rooms[id].players[name].socket)
+        // Yes he is: player can't join
+        res.sendFile(__dirname + '/public/views/alreadyConnected.html');
+      else {
+        // No he isn't: player can resume game
         res.sendFile(__dirname + '/public/views/play.html');
-        console.log(room);
-
-        //Wait for the connection event
-        io.on('connection', function(socket){
-            emile.initGame(io, socket, playerName, roomId, game); //fires the initGame function in emile.js
+        io.on('connection', function(socket) {
+          if(!game.rooms[id].players[name].socket) // To avoid tab duplication issue
+            game.rooms[id].resumePlayer(name, socket);
         });
-    }
-});
-
-app.get('/replay/rooms/:roomId/players/:playerName', function(req, res){
-    //Collect the player name and the room id
-    var playerName = req.params.playerName;
-    var roomId = req.params.roomId;
-
-    //If the room doesn't exist in the game or if the player is not inside it
-    if (!game.rooms.includes(roomId) || !game.getRoom(roomId).getPlayerStatus(playerName)){ //PROBLEM HERE! 2 rooms with the same id, one empty, other full
-        //Send the change name page
-        res.sendFile(__dirname + '/public/views/notThere.html');
-    }
-    else if(game.getRoom(roomId).players.length >= 2){
-        //Send the change name page
-        res.sendFile(__dirname + '/public/views/roomAlreadyFull.html');
-    }
-    else{
-        //Send the game page
+      }
+    } else {
+      // No he isn't: is the room full?
+      if (game.rooms[id].isFull())
+        // Yes it is: player can't join...
+        res.sendFile(__dirname + '/public/views/roomFull.html');
+      else {
+        // No it isn't: player can join, wait for connection, add the player
         res.sendFile(__dirname + '/public/views/play.html');
-
-        //Wait for the connection event
-        io.on('connection', function(socket){
-            emile.reinitGame(io, socket, playerName, roomId, game); //fires the reinitGame function in emile.js
+        io.on('connection', function(socket) {
+          if (!game.rooms[id].players[name]) // To avoid tab duplication issue
+            game.rooms[id].addPlayer(name, socket);
         });
+      }
     }
+  } else {
+    // No it doesn't: create a new room, wait for connection, add the first player
+    game.addRoom(id);
+    res.sendFile(__dirname + '/public/views/play.html');
+    io.on('connection', function(socket) {
+      if (!game.rooms[id].players[name]) // To avoid tab duplication issue
+        game.rooms[id].addPlayer(name, socket);
+    });
+  }
 });
