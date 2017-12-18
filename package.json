@@ -20,6 +20,7 @@
     "nodemon": "^1.12.1"
   },
   "dependencies": {
+    "cannon": "^0.6.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.2",
     "socket.io": "^2.0.4"
