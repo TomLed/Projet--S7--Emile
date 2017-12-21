@@ -9,14 +9,12 @@ function onWindowResize() {
 }
 
 function onDocumentMouseMove(event) {
-    event.preventDefault();
 
     mouse.x = event.clientX / window.innerWidth * 2 - 1;
     mouse.y = - event.clientY / window.innerHeight * 2 + 1;
 }
 
 function onDocumentMouseDown(event) {
-    event.preventDefault();
 
     outlinePass.visibleEdgeColor.set('#ffffff');
     outlinePass.edgeThickness = 2;
@@ -25,7 +23,6 @@ function onDocumentMouseDown(event) {
 }
 
 function onDocumentMouseUp(event) {
-    event.preventDefault();
 
     var intersects = raycaster.intersectObjects(scene.children, true);
 

@@ -8,7 +8,7 @@ class Renderer extends THREE.WebGLRenderer {
         this.setSize(window.innerWidth, window.innerHeight);
         this.shadowMap.enabled = true;
         this.shadowMap.type = THREE.PCFSoftShadowMap;
-        $('body').append(this.domElement);
+        $('#threeer').append(this.domElement);
     }
 }
 

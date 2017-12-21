@@ -87,7 +87,7 @@ function init() {
 
     initEvents();
 
-    $('#fontloader').hide();
+    //$('#fontloader').hide();
 }
 
 function animate() {
