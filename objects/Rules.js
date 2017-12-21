@@ -1,15 +1,15 @@
 module.exports = class {
-  constructor() {
+    constructor() {
 
-  }
+    }
 
-  canRollDices(player, currentPlayer) {
+    canRollDices() {
     // Just a fake condition for the sake of debugging
-    return player === currentPlayer;
-  }
+        return true;
+    }
 
-  genericActionRule(genericAttribute) {
-    var genericCondition;
-    return genericAttribute === genericCondition;
-  }
-}
+    genericActionRule(genericAttribute) {
+        var genericCondition;
+        return genericAttribute === genericCondition;
+    }
+};

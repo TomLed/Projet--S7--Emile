@@ -90,16 +90,14 @@ socket.on('alreadyInTheRoom', function(data){
     alert('Player ' + data.playerName + ' is already in the room ' + data.gameId + '. You cannot resume a game you are still playing in.');
 });
 
-
-
 function rollDices() {
-  console.log("ASK TO ROLL DICES");
-  socket.emit('roll dices');
+    console.log('ASK TO ROLL DICES');
+    socket.emit('roll dices');
 }
 
 socket.on('dices rolled', function(data) {
-  coordinates = data.coordinates;
-  values = data.faces;
-  for (i in dices) dices[i].updateValue(values[i]);
-  resetSim();
+    coordinates = data.coordinates;
+    values = data.faces;
+    for (i in dices) dices[i].updateValue(values[i]);
+    resetSim();
 });
