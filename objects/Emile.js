@@ -12,8 +12,7 @@ module.exports = class {
     }
 
     rollDices(player) {
-    // Just a fake condition : the player can roll dices only if his name is toto
-        if (this.rules.canRollDices(player, this.room.players['toto'])) {
+        if (this.rules.canRollDices()) {
             var simulation = Physics.simulate();
             this.dices = simulation.faces;
             player.canRollDices(simulation);

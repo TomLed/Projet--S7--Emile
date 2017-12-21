@@ -3,9 +3,9 @@ module.exports = class {
 
     }
 
-    canRollDices(player, currentPlayer) {
+    canRollDices() {
     // Just a fake condition for the sake of debugging
-        return player === currentPlayer;
+        return true;
     }
 
     genericActionRule(genericAttribute) {

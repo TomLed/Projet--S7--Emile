@@ -23,88 +23,88 @@ var simStep, simRunning;
 var names = ['toto', 'tata', 'titi'];
 var scores = [123, 456, 789];
 
-$(window).on("load", function() {
-  init();
-  animate();
+$(window).on('load', function() {
+    init();
+    animate();
 });
 
 function init() {
-  simStep = 120;
-  simRunning = false;
+    simStep = 120;
+    simRunning = false;
 
-  raycaster = new THREE.Raycaster();
+    raycaster = new THREE.Raycaster();
 
-  mouse = new THREE.Vector2();
+    mouse = new THREE.Vector2();
 
-  renderer = new Renderer();
+    renderer = new Renderer();
 
-  scene = new Scene();
+    scene = new Scene();
 
-  camera = new Camera();
-  scene.add(camera);
+    camera = new Camera();
+    scene.add(camera);
 
-  ui = new UI();
-  camera.add(ui);
+    ui = new UI();
+    camera.add(ui);
 
-  light = new PointLight();
-  scene.add(light);
+    light = new PointLight();
+    scene.add(light);
 
-  ambient = new THREE.AmbientLight(0xffffff, .6);
-  scene.add(ambient);
+    ambient = new THREE.AmbientLight(0xffffff, .6);
+    scene.add(ambient);
 
-  ground = new Ground();
-  scene.add(ground);
+    ground = new Ground();
+    scene.add(ground);
 
-  for (i in opponents) {
-    opponents[i] = new Opponent(names[i], scores[i]);
-    scene.add(opponents[i]);
-  }
+    for (i in opponents) {
+        opponents[i] = new Opponent(names[i], scores[i]);
+        scene.add(opponents[i]);
+    }
 
-  opponents[0].position.set(-2, 1, 0);
-  opponents[1].position.set(2, 1, 0);
-  opponents[2].position.set(0, 1, -2);
+    opponents[0].position.set(-2, 1, 0);
+    opponents[1].position.set(2, 1, 0);
+    opponents[2].position.set(0, 1, -2);
 
-  for (i in dices) {
-    dices[i] = new Dice();
-    scene.add(dices[i]);
-    scene.add(dices[i].sprite);
-  }
+    for (i in dices) {
+        dices[i] = new Dice();
+        scene.add(dices[i]);
+        scene.add(dices[i].sprite);
+    }
 
-  composer = new THREE.EffectComposer(renderer);
+    composer = new THREE.EffectComposer(renderer);
 
-  renderPass = new THREE.RenderPass(scene, camera);
-  composer.addPass(renderPass);
+    renderPass = new THREE.RenderPass(scene, camera);
+    composer.addPass(renderPass);
 
-  outlinePass = new OutlinePass();
-  composer.addPass(outlinePass);
+    outlinePass = new OutlinePass();
+    composer.addPass(outlinePass);
 
-  /*saoPass = new SAOPass();
+    /*saoPass = new SAOPass();
   composer.addPass(saoPass);*/
 
-  smaaPass = new THREE.SMAAPass(window.innerWidth, window.innerHeight);
-  smaaPass.renderToScreen = true;
-  composer.addPass(smaaPass);
+    smaaPass = new THREE.SMAAPass(window.innerWidth, window.innerHeight);
+    smaaPass.renderToScreen = true;
+    composer.addPass(smaaPass);
 
-  initEvents();
+    initEvents();
 
-  $("#fontloader").hide();
+    $('#fontloader').hide();
 }
 
 function animate() {
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 
-  camera.update();
+    camera.update();
 
-  for (i in opponents) opponents[i].update();
+    for (i in opponents) opponents[i].update();
 
-  updateIntersected();
+    updateIntersected();
 
-  updateSim();
+    updateSim();
 
-  for (i in dices) dices[i].updateSprite();
+    for (i in dices) dices[i].updateSprite();
 
-  //renderer.render(scene, camera);
-  composer.render();
+    //renderer.render(scene, camera);
+    composer.render();
 }
 
 
