@@ -16,6 +16,10 @@
   background: -webkit-radial-gradient(#883033, #110313);
 }
 
+#inputer {
+    z-index: 100;
+}
+
 body {
   font-family: "Cabin-Regular";
   margin: 0;
