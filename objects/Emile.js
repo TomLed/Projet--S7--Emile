@@ -3,7 +3,7 @@ var Physics = require('./Physics');
 module.exports = class {
     constructor(room) {
         this.room = room;
-        this.scores = [];
+        this.scores = {};
         this.dices = [];
         this.reserve = [];
         this.currentPlayer;
