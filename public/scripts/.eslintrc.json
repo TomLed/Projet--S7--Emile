@@ -2,6 +2,7 @@
     "_diceValue": true,
     "io": false,
     "THREE": false,
+<<<<<<< HEAD
     "Cookies": false,
     "camera": false,
     "dices": true,
@@ -16,6 +17,9 @@
     "ui": false,
     "coordinates": true,
     "values": true
+=======
+    "Cookies": false
+>>>>>>> 31052677800dbf5afdbae258ebf4d7abef14bf8a
     },
     "env": {
         "browser": true,
