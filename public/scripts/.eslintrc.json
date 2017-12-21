@@ -2,18 +2,7 @@
     "_diceValue": true,
     "io": false,
     "THREE": false,
-    "Cookies": false,
-    "camera": false,
-    "dices": true,
-    "outlinePass": false,
-    "diceCam": false,
-    "timer": true,
-    "scene": false,
-    "mouse": false,
-    "renderer": false,
-    "composer": false,
-    "raycaster": false,
-    "ui": false
+    "Cookies": false
     },
     "env": {
         "browser": true,
