@@ -2,12 +2,6 @@
 var socket = io.connect(window.location.origin);
 
 
-<<<<<<< HEAD
-//Emitters
-function rollDices(){
-    console.log('ASK TO ROLL DICES');
-    socket.emit('roll dices');
-=======
 //Query DOM
 var resultsWindow = document.getElementById('results'),
     $doc = $(document);
@@ -96,38 +90,14 @@ socket.on('alreadyInTheRoom', function(data){
     alert('Player ' + data.playerName + ' is already in the room ' + data.gameId + '. You cannot resume a game you are still playing in.');
 });
 
-socket.on('updated score', function(data) {
-
-  // data = {nomDuJoueur: score, nomDuJoueur, score ....}
-  for (var i in data) {
-    scores[i]=data[i];
-  }
-
-});
-
 function rollDices() {
-  console.log("ASK TO ROLL DICES");
-  socket.emit('roll dices');
->>>>>>> 31052677800dbf5afdbae258ebf4d7abef14bf8a
+    console.log('ASK TO ROLL DICES');
+    socket.emit('roll dices');
 }
 
-function updatePoints(playerName, deltaScore){
-    console.log('Ask to add or remove points to a player');
-    socket.emit('update points', {playerName: playerName, deltaScore: deltaScore});
-}
-
-
-//Listeners
 socket.on('dices rolled', function(data) {
-<<<<<<< HEAD
     coordinates = data.coordinates;
     values = data.faces;
-    for (var i in dices) dices[i].updateValue(values[i]);
+    for (i in dices) dices[i].updateValue(values[i]);
     resetSim();
-=======
-  coordinates = data.coordinates;
-  values = data.faces;
-  for (i in dices) dices[i].updateValue(values[i]);
-  resetSim();
->>>>>>> 31052677800dbf5afdbae258ebf4d7abef14bf8a
 });
