@@ -54,7 +54,7 @@ module.exports = class{
     }
 
     disconnect(){
-        console.log('player', this.name, 'disconnected');
+        console.log('socket for player', this.name, 'disconnected');
         delete this.socket;
     }
 };
