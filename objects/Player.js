@@ -4,6 +4,7 @@ module.exports = class{
         this.name = name;
         this.socket = socket;
         this.socket.player = this;
+        this.score = -2500;
         this.setSocketFunctions();
         this.socket.emit('connected', {playerName: this.name, roomId: this.room.id});
     }
@@ -27,6 +28,12 @@ module.exports = class{
         this.socket.on('disconnect', function() {
             this.player.disconnect();
         });
+
+        this.socket.on('modifie le score d un joueur', function(data) {
+            var nomDuJoueur = data.name;
+            var scoreAAjouter = data.score;
+
+        })
     }
 
     resume(){

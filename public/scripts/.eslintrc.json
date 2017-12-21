@@ -13,7 +13,9 @@
     "renderer": false,
     "composer": false,
     "raycaster": false,
-    "ui": false
+    "ui": false,
+    "coordinates": true,
+    "values": true
     },
     "env": {
         "browser": true,
