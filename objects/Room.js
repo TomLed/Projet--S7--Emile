@@ -2,11 +2,12 @@ var Emile = require('./Emile');
 var Player = require('./Player');
 
 module.exports = class{
-    constructor(id){
+    constructor(id, io){
         this.id = id;
         this.players = {};
         this.number = 0;
         this.emile = new Emile(this);
+        this.io = io;
     }
 
     getPlayer(playerName){
@@ -17,11 +18,13 @@ module.exports = class{
         this.players[name] = new Player(name, socket, this);
         this.number++;
         console.log('Player', name, 'added with socket id', this.players[name].socket.id, 'in room', this.id);
+        this.players[name].socket.join(this.id);
     }
 
     resumePlayer(name, socket){
         this.players[name].setSocket(socket);
         console.log('Player', name, 'resumed with socket id', this.players[name].socket.id, 'in room', this.id);
+        this.players[name].socket.join(this.id);
     }
 
     isFull(){

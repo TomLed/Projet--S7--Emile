@@ -18,6 +18,9 @@ module.exports = class{
         this.socket.on('roll dices', function() {
             this.player.rollDices();
         });
+        this.socket.on('update points', function(data){
+            this.room.players[data.playerName].updatePoints(data.deltaScore);
+        })
         this.socket.on('want to add dice to reserve', function(data) {
             this.player.addToReserve(data.dice);
         });
@@ -38,7 +41,7 @@ module.exports = class{
     }
 
     canRollDices(simulation){
-        this.socket.emit('dices rolled', simulation);
+        this.room.io.to(this.room.id).emit('dices rolled', simulation);
     }
 
     cannotRollDices(){
@@ -51,6 +54,11 @@ module.exports = class{
 
     removeFromReserve(data){
         this.emile.removeDice(data.dice);
+    }
+
+    updatePoints(deltaScore){
+        this.room.emile.scores[this.name] += deltaScore;
+        this.room.io.to(this.room.id).emit('scores updated');
     }
 
     disconnect(){

@@ -27,7 +27,7 @@ app.use('/views', express.static('public/views'));
 
 
 // Initializing game logic
-var game = new Game();
+var game = new Game(io);
 
 
 // When client asks for /join page
