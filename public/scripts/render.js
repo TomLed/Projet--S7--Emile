@@ -20,8 +20,8 @@ var coordinates = [];
 var values = [];
 var simStep, simRunning;
 
-var names = ['toto', 'tata', 'titi'];
-var scores = [123, 456, 789];
+var opponentsNames = new Array(3).fill('');
+var scores = new Array(3).fill(-2500); //Need to think of a solution to make this array communicate with the real scores
 
 $(window).on('load', function() {
     init();
@@ -55,8 +55,8 @@ function init() {
     ground = new Ground();
     scene.add(ground);
 
-    for (i in opponents) {
-        opponents[i] = new Opponent(names[i], scores[i]);
+    for (var i in opponents) {
+        opponents[i] = new Opponent(opponentsNames[i], scores[i]);
         scene.add(opponents[i]);
     }
 
@@ -64,7 +64,7 @@ function init() {
     opponents[1].position.set(2, 1, 0);
     opponents[2].position.set(0, 1, -2);
 
-    for (i in dices) {
+    for (var i in dices) {
         dices[i] = new Dice();
         scene.add(dices[i]);
         scene.add(dices[i].sprite);
@@ -95,13 +95,13 @@ function animate() {
 
     camera.update();
 
-    for (i in opponents) opponents[i].update();
+    for (var i in opponents) opponents[i].update();
 
     updateIntersected();
 
     updateSim();
 
-    for (i in dices) dices[i].updateSprite();
+    for (var i in dices) dices[i].updateSprite();
 
     //renderer.render(scene, camera);
     composer.render();

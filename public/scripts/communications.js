@@ -8,7 +8,7 @@ var socket = io.connect(window.location.origin);
 //Emitters
 function rollDices() {
     console.log('ASK TO ROLL DICES');
-    socket.emit('roll dices');
+    socket.emit('roll dices', thisPlayerName);
 }
 
 function updatePoints(playerName, deltaScore){
@@ -27,6 +27,10 @@ socket.on('connected', function(data){
     thisPlayerName = data.playerName;
 })
 
+socket.on('game can start', function(currentPlayerName){
+    $('#currentPlayerName').html(currentPlayerName);
+})
+
 socket.on('dices rolled', function(data) {
     coordinates = data.coordinates;
     values = data.faces;
@@ -39,6 +43,10 @@ socket.on('points updated', function(data){
 });
 
 socket.on('next turn', function(currentPlayerName){
-    //do something to allow the current player to play
+    $('#currentPlayerName').html(currentPlayerName);
     console.log('The new current player ' + currentPlayerName + ' can play while the others cannot anymore');
+});
+
+socket.on('not your turn', function(currentPlayerName){
+    console.log('Not your turn!')
 });

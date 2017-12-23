@@ -14,14 +14,25 @@ module.exports = class{
     }
 
     setSocketFunctions(){
-        this.socket.on('roll dices', function() {
-            this.player.rollDices();
+        this.socket.on('roll dices', function(thisPlayerName) {
+            if (this.player.room.emile.currentPlayerName === thisPlayerName){
+                this.player.rollDices();
+            }
+            else{
+                this.player.socket.emit('not your turn', this.player.room.emile.currentPlayerName);
+            }
         });
         this.socket.on('update points', function(data){
             this.room.players[data.playerName].updatePoints(data.deltaScore);
         });
-        this.socket.on('end turn', function(playerName){
-            this.player.room.emile.nextPlayer(playerName);
+        this.socket.on('end turn', function(thisPlayerName){
+            if (this.player.room.emile.currentPlayerName === thisPlayerName){
+                this.player.room.emile.nextPlayer(thisPlayerName);
+            }
+            else{
+                this.player.socket.emit('not your turn', this.player.room.emile.currentPlayerName);
+            }
+
         });
         this.socket.on('want to add dice to reserve', function(data) {
             this.player.addToReserve(data.dice);

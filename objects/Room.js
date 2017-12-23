@@ -22,6 +22,11 @@ module.exports = class{
         console.log('Player', name, 'added with socket id', this.players[name].socket.id, 'in room', this.id);
         this.players[name].socket.join(this.id);
         this.players[name].socket.emit('connected', {playerName: this.players[name].name, roomId: this.players[name].room.id});
+        //When the last player joins the room, the first is set as the current player and the game can start
+        if (this.playerNames.length === 4){
+            this.emile.currentPlayerName = this.playerNames[0];
+            this.io.to(this.id).emit('game can start', this.emile.currentPlayerName);
+        }
     }
 
     resumePlayer(name, socket){

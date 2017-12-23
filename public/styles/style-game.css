@@ -8,3 +8,7 @@ body {
   font-family: "CabinRegular";
   src: url("/../../../../styles/Cabin-Regular.ttf") format("truetype");
 }
+
+p {
+  display: inline;
+}
