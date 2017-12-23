@@ -56,6 +56,7 @@ module.exports = class{
         console.log('Player', name, 'resumed with socket id', this.players[name].socket.id, 'in room', this.id);
         this.players[name].socket.join(this.id);
         this.players[name].socket.emit('connected', {playerName: this.players[name].name, roomId: this.players[name].room.id});
+        this.players[name].socket.emit('game can start', this.emile.currentPlayerName);
         //Load the names of the opponents
         var playerPosition = this.getPlayerPosition(name);
         if (playerPosition === 0){
@@ -77,6 +78,10 @@ module.exports = class{
             this.players[name].socket.emit('opponent joined', {opponentIndex: 0, opponentName: this.playerNames[0]});
             this.players[name].socket.emit('opponent joined', {opponentIndex: 1, opponentName: this.playerNames[1]});
             this.players[name].socket.emit('opponent joined', {opponentIndex: 2, opponentName: this.playerNames[2]});
+        }
+        //Load the scores of the opponents
+        for (var i = 0; i < 3; i++){
+            this.players[name].socket.emit('points updated', {playerName: this.playerNames[i], newScore: this.emile.scores[this.playerNames[i]]});
         }
     }
 

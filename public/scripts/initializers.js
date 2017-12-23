@@ -170,6 +170,9 @@ class Opponent extends THREE.Group {
         this.tix = new THREE.Mesh(tixGeo, tixMat);
         this.tix.position.set(0, -.175, .1);
         this.add(this.tix);
+
+        this.score.value = score;
+        this.name.value = name;
     }
 
     setCanvas(text, color, height) {

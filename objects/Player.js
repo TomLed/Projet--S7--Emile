@@ -23,7 +23,12 @@ module.exports = class{
             }
         });
         this.socket.on('update points', function(data){
-            this.room.players[data.playerName].updatePoints(data.deltaScore);
+            if (data.playerAsking === this.player.room.emile.currentPlayerName){
+                this.player.room.players[data.playerName].updatePoints(data.deltaScore);
+            }
+            else{
+                this.player.socket.emit('not your turn', this.player.room.emile.currentPlayerName);
+            }
         });
         this.socket.on('end turn', function(thisPlayerName){
             if (this.player.room.emile.currentPlayerName === thisPlayerName){
@@ -43,10 +48,6 @@ module.exports = class{
         this.socket.on('disconnect', function() {
             this.player.disconnect();
         });
-    }
-
-    resume(){
-
     }
 
     rollDices(){
@@ -70,8 +71,11 @@ module.exports = class{
     }
 
     updatePoints(deltaScore){
+        if (!this.room.emile.scores[this.name]){
+            this.room.emile.scores[this.name] = -2500;
+        }
         this.room.emile.scores[this.name] += deltaScore;
-        this.room.io.to(this.room.id).emit('scores updated');
+        this.room.io.to(this.room.id).emit('points updated', {playerName: this.name, newScore: this.room.emile.scores[this.name]});
     }
 
     disconnect(){
