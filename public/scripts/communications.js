@@ -25,21 +25,29 @@ function endTurn(){
 //Doers
 socket.on('connected', function(data){
     thisPlayerName = data.playerName;
-})
+});
 
 socket.on('game can start', function(currentPlayerName){
     $('#currentPlayerName').html(currentPlayerName);
-})
+});
 
-socket.on('dices rolled', function(data) {
+//data = {opponentIndex: int, opponentName: string}
+socket.on('opponent joined', function(data){
+    console.log('opponent ' + data.opponentName + ' added in position ' + data.opponentIndex);
+    console.log(opponents[data.opponentIndex]);
+    opponents[data.opponentIndex].updateName(data.opponentName);
+});
+
+socket.on('dices rolled', function(data){
     coordinates = data.coordinates;
     values = data.faces;
-    for (i in dices) dices[i].updateValue(values[i]);
+    for (var i in dices) dices[i].updateValue(values[i]);
     resetSim();
 });
 
 socket.on('points updated', function(data){
     //do something to show the new points
+    /* for (i in opponents) */
 });
 
 socket.on('next turn', function(currentPlayerName){

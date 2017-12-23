@@ -229,6 +229,18 @@ class Opponent extends THREE.Group {
 
         this.lookAt(this.look);
     }
+
+    updateScore(score){
+        this.score.material.map = new THREE.Texture(this.setCanvas(score));
+        this.score.material.map.needsUpdate = true;
+        this.score.material.map.anisotropy = 8;
+    }
+
+    updateName(name){
+        this.name.material.map = new THREE.Texture(this.setCanvas(name));
+        this.name.material.map.needsUpdate = true;
+        this.name.material.map.anisotropy = 8;
+    }
 }
 
 class Sprite extends THREE.Sprite {
