@@ -25,6 +25,8 @@ function updateIntersected() {
                     outlinePass.selectedObjects = [intersected];
                 } else if (ui.roll == intersected) {
                     outlinePass.selectedObjects = [intersected];
+                } else if (ui.end == intersected){
+                    outlinePass.selectedObjects = [intersected];
                 } else {
                     outlinePass.selectedObjects = [];
                 }

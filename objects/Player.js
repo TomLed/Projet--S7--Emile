@@ -5,7 +5,6 @@ module.exports = class{
         this.socket = socket;
         this.socket.player = this;
         this.setSocketFunctions();
-        this.socket.emit('connected', {playerName: this.name, roomId: this.room.id});
     }
 
     setSocket(socket){
@@ -20,7 +19,10 @@ module.exports = class{
         });
         this.socket.on('update points', function(data){
             this.room.players[data.playerName].updatePoints(data.deltaScore);
-        })
+        });
+        this.socket.on('end turn', function(playerName){
+            this.player.room.emile.nextPlayer(playerName);
+        });
         this.socket.on('want to add dice to reserve', function(data) {
             this.player.addToReserve(data.dice);
         });

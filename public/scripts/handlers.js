@@ -33,6 +33,8 @@ function onDocumentMouseUp(event) {
             if (intersected) {
                 if (intersected == camera.children[0].children[1])
                     rollDices();
+                if (intersected == ui.end)
+                    endTurn();
                 if (!camera.down) {
                     if (dices[0].cube == intersected)
                         dices[0].update();
