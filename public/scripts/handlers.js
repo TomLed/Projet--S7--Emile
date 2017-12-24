@@ -31,7 +31,7 @@ function onDocumentMouseUp(event) {
         if (intersects.length > 0) {
             var intersected = intersects[0].object;
             if (intersected) {
-                if (intersected == camera.children[0].children[1])
+                if (intersected == ui.roll)
                     rollDices();
                 if (intersected == ui.end)
                     endTurn();
@@ -42,6 +42,8 @@ function onDocumentMouseUp(event) {
                 if (intersected == opponents[2].score)
                     updatePoints(opponentsNames[2], parseInt($('#inputDeltaScore').val()));
                 if (!camera.down) {
+                    if (intersected == ui.scoreMesh)
+                        updatePoints(thisPlayerName, parseInt($('#inputDeltaScore').val()));
                     if (dices[0].cube == intersected)
                         dices[0].update();
                     if (dices[1].cube == intersected)

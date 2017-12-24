@@ -19,6 +19,7 @@ function updateIntersected() {
                     outlinePass.selectedObjects = [];
                 }
             } else {
+
                 if (dices[0].cube == intersected ||
             dices[1].cube == intersected ||
             dices[2].cube == intersected ||
@@ -27,7 +28,9 @@ function updateIntersected() {
                     outlinePass.selectedObjects = [intersected];
                 } else if (ui.roll == intersected) {
                     outlinePass.selectedObjects = [intersected];
-                } else if (ui.end == intersected){
+                } else if (ui.end == intersected) {
+                    outlinePass.selectedObjects = [intersected];
+                } else if (intersected == ui.scoreMesh) {
                     outlinePass.selectedObjects = [intersected];
                 } else {
                     outlinePass.selectedObjects = [];
