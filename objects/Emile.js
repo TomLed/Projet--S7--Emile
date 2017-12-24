@@ -44,6 +44,12 @@ module.exports = class {
         else{
             this.currentPlayerName = this.room.playerNames[nextPlayerIndex+1];
         }
+
+        for (var i = 0; i< 5; i++) {
+            this.reserve.fill(false);
+            this.room.io.to(this.room.id).emit('dice updated', {diceIndex: i, inReserve: false});
+        }
+
         this.room.io.to(this.room.id).emit('next turn', this.currentPlayerName);
     }
 };
