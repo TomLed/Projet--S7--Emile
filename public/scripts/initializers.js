@@ -87,6 +87,7 @@ class UI extends THREE.Group {
     constructor() {
         super();
         this.count = 0;
+        this.score = -2500;
 
         var reserveMat = new THREE.MeshBasicMaterial({color: 0x060606, transparent: true, opacity: 0.75});
         var reserveGeo = new THREE.PlaneGeometry(.5, .1);
@@ -107,6 +108,40 @@ class UI extends THREE.Group {
         this.end = new THREE.Mesh(endGeo, endMat);
         this.end.position.set(-.32, -.28, -.5);
         this.add(this.end);
+
+        this.scoreTex = new THREE.Texture(this.setCanvas(this.score));
+        this.scoreTex.needsUpdate = true;
+        var scoreGeo = new THREE.PlaneGeometry(.1, .05);
+        var scoreMat = new THREE.MeshBasicMaterial({map: this.scoreTex, transparent: true, opacity: 1});
+
+        this.scoreMesh = new THREE.Mesh(scoreGeo, scoreMat);
+        this.scoreMesh.position.set(0, -.18, -.45);
+        this.add(this.scoreMesh);
+    }
+
+    updateScore(score) {
+        this.score = score;
+        this.scoreMesh.material.map = new THREE.Texture(this.setCanvas(score));
+        this.scoreMesh.material.map.needsUpdate = true;
+    }
+
+    setCanvas(text) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+
+        canvas.width = 256;
+        canvas.height = 128;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        context.fillStyle = 'white';
+        var textSize = context.measureText(text).width;
+        var fontSize = 72;
+        context.font = fontSize + 'px CabinRegular';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+        return canvas;
     }
 }
 

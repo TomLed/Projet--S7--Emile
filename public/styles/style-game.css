@@ -12,3 +12,10 @@ body {
 p {
   display: inline;
 }
+
+
+#inputer {
+    z-index: 100;
+    position: absolute;
+    margin: 5px;
+}
