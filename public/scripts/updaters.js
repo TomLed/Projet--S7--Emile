@@ -72,3 +72,7 @@ function resetSim() {
     simStep = 0;
     simRunning = true;
 }
+
+function logger(message) {
+    $('#logger').html(message);
+}

@@ -86,8 +86,9 @@ class Camera extends THREE.PerspectiveCamera {
 class UI extends THREE.Group {
     constructor() {
         super();
-        this.count = 0;
         this.score = -2500;
+
+        this.inReserve = new Array(5).fill(false);
 
         var reserveMat = new THREE.MeshBasicMaterial({color: 0x060606, transparent: true, opacity: 0.75});
         var reserveGeo = new THREE.PlaneGeometry(.5, .1);
@@ -296,9 +297,11 @@ class Sprite extends THREE.Sprite {
 }
 
 class Dice extends THREE.Group {
-    constructor() {
+    constructor(index) {
         super();
+        this.index = index;
         this.position.set(0,-1,0);
+        this.positionInReserve = undefined;
 
         this.value = undefined;
         this.reserve = false;
@@ -423,8 +426,38 @@ class Dice extends THREE.Group {
         this.sprite.position.copy(this.position).add(new THREE.Vector3(0, camera.down ? .2 : -1, 0));
     }
 
-    update() {
-        if (!simRunning) {
+    update(reserve) {
+
+        this.reserve = reserve;
+        
+        if (this.reserve) {
+            console.log("PT N RSRV");
+
+            var i = 0;
+            while(ui.inReserve[i]) {
+                i++;
+            }
+            ui.inReserve[i] = this.reserve;
+            this.positionInReserve = i;
+
+            THREE.SceneUtils.detach(this.cube, this, scene);
+            THREE.SceneUtils.attach(this.cube, scene, camera);
+            this.cube.position.set(-.2+.1*this.positionInReserve, -.28, -.5);
+            this.cube.scale.set(.4, .4, .4);
+            this.showFace();
+        } else {
+            console.log("RM FRM RSRV");
+
+            ui.inReserve[this.positionInReserve] = this.reserve;
+            this.positionInReserve = undefined;
+
+            THREE.SceneUtils.detach(this.cube, camera, scene);
+            THREE.SceneUtils.attach(this.cube, scene, this);
+            this.cube.position.set(0, 0, 0);
+            this.cube.rotation.set(0, 0, 0);
+            this.cube.scale.set(1, 1, 1);
+        }
+        /*if (!simRunning) {
             var child = this.cube;
 
             if (!this.reserve) {
@@ -444,7 +477,7 @@ class Dice extends THREE.Group {
                 this.reserve = !this.reserve;
                 ui.count--;
             }
-        }
+        }*/
     }
 
     showFace() {

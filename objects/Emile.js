@@ -1,18 +1,23 @@
-var Physics = require('./Physics');
+var PHYSICS = require('./Physics');
 
 module.exports = class {
     constructor(room) {
         this.room = room;
         this.scores = {};
         this.dices = [];
-        this.reserve = [];
+        this.reserve = new Array(5).fill(false);
         this.currentPlayerName;
     }
 
     rollDices(player) {
-        var simulation = Physics.simulate();
+        var simulation = PHYSICS.simulate();
         this.dices = simulation.faces;
         player.canRollDices(simulation);
+    }
+
+    updateDice(player, index) {
+        this.reserve[index] = !this.reserve[index];
+        player.canUpdateDice(index, this.reserve[index]);
     }
 
     addDice(dice) {
