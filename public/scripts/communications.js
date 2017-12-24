@@ -52,6 +52,9 @@ socket.on('points updated', function(data){
             opponents[i].updateScore(data.newScore);
         }
     }
+
+    if (data.playerName == thisPlayerName)
+        ui.updateScore(data.newScore);
 });
 
 socket.on('next turn', function(currentPlayerName){
