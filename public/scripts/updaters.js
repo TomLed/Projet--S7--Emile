@@ -13,6 +13,8 @@ function updateIntersected() {
             opponents[1].tix == intersected ||
             opponents[2].tix == intersected) {
                     outlinePass.selectedObjects = [intersected];
+                } else if (opponents[0].score == intersected || opponents[1].score || opponents[2].score){
+                    outlinePass.selectedObjects = [intersected];
                 } else {
                     outlinePass.selectedObjects = [];
                 }

@@ -1,9 +1,11 @@
 //Global variables
 var thisPlayerName;
+var opponentsNames = new Array(3).fill('');
 
 
 // Make connection
 var socket = io.connect(window.location.origin);
+
 
 //Emitters
 function rollDices() {
@@ -13,7 +15,7 @@ function rollDices() {
 
 function updatePoints(playerName, deltaScore){
     console.log('Ask to add or remove points to a player');
-    socket.emit('update points', {playerName: playerName, deltaScore: deltaScore});
+    socket.emit('update points', {playerName: playerName, deltaScore: deltaScore, playerAsking: thisPlayerName});
 }
 
 function endTurn(){
@@ -33,9 +35,8 @@ socket.on('game can start', function(currentPlayerName){
 
 //data = {opponentIndex: int, opponentName: string}
 socket.on('opponent joined', function(data){
-    console.log('opponent ' + data.opponentName + ' added in position ' + data.opponentIndex);
-    console.log(opponents[data.opponentIndex]);
     opponents[data.opponentIndex].updateName(data.opponentName);
+    opponentsNames[data.opponentIndex] = data.opponentName;
 });
 
 socket.on('dices rolled', function(data){
@@ -46,8 +47,11 @@ socket.on('dices rolled', function(data){
 });
 
 socket.on('points updated', function(data){
-    //do something to show the new points
-    /* for (i in opponents) */
+    for (var i = 0; i < 3; i++){
+        if (opponentsNames[i] == data.playerName){
+            opponents[i].updateScore(data.newScore);
+        }
+    }
 });
 
 socket.on('next turn', function(currentPlayerName){

@@ -35,6 +35,12 @@ function onDocumentMouseUp(event) {
                     rollDices();
                 if (intersected == ui.end)
                     endTurn();
+                if (intersected == opponents[0].score)
+                    updatePoints(opponentsNames[0], parseInt($('#inputDeltaScore').val()));
+                if (intersected == opponents[1].score)
+                    updatePoints(opponentsNames[1], parseInt($('#inputDeltaScore').val()));
+                if (intersected == opponents[2].score)
+                    updatePoints(opponentsNames[2], parseInt($('#inputDeltaScore').val()));
                 if (!camera.down) {
                     if (dices[0].cube == intersected)
                         dices[0].update();
