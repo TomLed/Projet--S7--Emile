@@ -7,11 +7,21 @@ var opponentsNames = new Array(3).fill('');
 var socket = io.connect(window.location.origin);
 
 
+
+
 //Emitters
 function rollDices() {
     console.log('ASK TO ROLL DICES');
     socket.emit('roll dices', thisPlayerName);
 }
+
+function updateDice(diceIndex) {
+    socket.emit('update dice', {diceIndex: diceIndex});
+}
+
+socket.on('dice updated', function(data) {
+    dices[data.diceIndex].update(data.inReserve);
+});
 
 function updatePoints(playerName, deltaScore){
     console.log('Ask to add or remove points to a player');
@@ -59,9 +69,9 @@ socket.on('points updated', function(data){
 
 socket.on('next turn', function(currentPlayerName){
     $('#currentPlayerName').html(currentPlayerName);
-    console.log('The new current player ' + currentPlayerName + ' can play while the others cannot anymore');
+    logger('The new current player ' + currentPlayerName + ' can play while the others cannot anymore');
 });
 
 socket.on('not your turn', function(currentPlayerName){
-    console.log('Not your turn!')
+    logger('Not your turn!');
 });

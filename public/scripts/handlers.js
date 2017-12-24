@@ -9,6 +9,7 @@ function onWindowResize() {
 }
 
 function onDocumentMouseMove(event) {
+    event.preventDefault();
 
     mouse.x = event.clientX / window.innerWidth * 2 - 1;
     mouse.y = - event.clientY / window.innerHeight * 2 + 1;
@@ -45,15 +46,15 @@ function onDocumentMouseUp(event) {
                     if (intersected == ui.scoreMesh)
                         updatePoints(thisPlayerName, parseInt($('#inputDeltaScore').val()));
                     if (dices[0].cube == intersected)
-                        dices[0].update();
+                        updateDice(0);
                     if (dices[1].cube == intersected)
-                        dices[1].update();
+                        updateDice(1);
                     if (dices[2].cube == intersected)
-                        dices[2].update();
+                        updateDice(2);
                     if (dices[3].cube == intersected)
-                        dices[3].update();
+                        updateDice(3);
                     if (dices[4].cube == intersected)
-                        dices[4].update();
+                        updateDice(4);
                 }
             }
         }

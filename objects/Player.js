@@ -39,11 +39,14 @@ module.exports = class{
             }
 
         });
-        this.socket.on('want to add dice to reserve', function(data) {
-            this.player.addToReserve(data.dice);
-        });
-        this.socket.on('want to remove dice from reserve', function(data) {
-            this.player.removeFromReserve(data.dice);
+        this.socket.on('update dice', function(data) {
+            if (this.player.room.emile.currentPlayerName === this.player.name){
+                this.player.updateDice(data.diceIndex);
+            }
+            else{
+                this.player.socket.emit('not your turn', this.player.room.emile.currentPlayerName);
+            }
+
         });
         this.socket.on('disconnect', function() {
             this.player.disconnect();
@@ -62,8 +65,12 @@ module.exports = class{
         this.socket.emit('not your turn');
     }
 
-    addToReserve(dice){
-        this.emile.addDice(dice);
+    updateDice(index) {
+        this.room.emile.updateDice(this, index);
+    }
+
+    canUpdateDice(index, reserve) {
+        this.room.io.to(this.room.id).emit('dice updated', {diceIndex: index, inReserve: reserve});
     }
 
     removeFromReserve(data){

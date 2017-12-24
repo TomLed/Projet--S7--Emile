@@ -65,7 +65,7 @@ function init() {
     opponents[2].position.set(0, 1, -2);
 
     for (var i in dices) {
-        dices[i] = new Dice();
+        dices[i] = new Dice(i);
         scene.add(dices[i]);
         scene.add(dices[i].sprite);
     }
