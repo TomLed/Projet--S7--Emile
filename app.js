@@ -32,7 +32,14 @@ var game = new Game(io);
 
 // When client asks for /join page
 app.get('/join', function(req, res) {
-    res.sendFile(__dirname + '/public/views/join.html');
+    if (req.cookies.alreadyConnectedOnce){
+        var cookieContent = {playerName: req.cookies.playerName, roomId: req.cookies.roomId, url: req.cookies.url};
+        console.log(cookieContent);
+        res.redirect(cookieContent.url + '/play/rooms/' + cookieContent.roomId + '/players/' + cookieContent.playerName);
+    }
+    else{
+        res.sendFile(__dirname + '/public/views/join.html');
+    }
 });
 
 
