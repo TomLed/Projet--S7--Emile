@@ -7,8 +7,6 @@ var opponentsNames = new Array(3).fill('');
 var socket = io.connect(window.location.origin);
 
 
-
-
 //Emitters
 function rollDices() {
     console.log('ASK TO ROLL DICES');
@@ -37,16 +35,23 @@ function endTurn(){
 //Doers
 socket.on('connected', function(data){
     thisPlayerName = data.playerName;
+    var cookieContent = {playerName: data.playerName, roomId: data.roomId, url: window.location.origin};
+    Cookies.set('alreadyConnectedOnce', '1');
+    Cookies.set('playerName', cookieContent.playerName);
+    Cookies.set('roomId', cookieContent.roomId);
+    Cookies.set('url', cookieContent.url);
 });
 
 socket.on('game can start', function(currentPlayerName){
     $('#currentPlayerName').html(currentPlayerName);
+    logger('Everyone is ready, the game can start');
 });
 
 //data = {opponentIndex: int, opponentName: string}
 socket.on('opponent joined', function(data){
     opponents[data.opponentIndex].updateName(data.opponentName);
     opponentsNames[data.opponentIndex] = data.opponentName;
+    logger(data.opponentName + ' has joined the game');
 });
 
 socket.on('dices rolled', function(data){
