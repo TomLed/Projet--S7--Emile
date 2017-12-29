@@ -1,52 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Emile</title>
-    <link rel="stylesheet" href="./../../../../styles/style-game.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-  </head>
-  <body>
+    <head>
+        <meta charset="utf-8">
+        <title>emile.io</title>
+        <link rel="stylesheet" href="./../../../../styles/style-play.css">
+        <link rel="icon" href="/../../../../images/logo.ico" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    </head>
+    <body>
 
-    <div id="inputer" style="font-family: CabinRegular;">
-        <p><strong>Current player: </strong></p><p id="currentPlayerName"></p>
-        <br />
-        <p>Enter delta score here:</p>
-        <input id="inputDeltaScore" type="text" placeholder="+/- ?">
-        <div id="logger"></div>
-    </div>
+        <div id="content">
+            <div id="game-status">
+                CURRENT PLAYER <div id="current-player"></div>
+                <div id="logger"></div>
+                <div id="status-foot"></div>
+            </div>
 
-    <div id="threeer"></div>
+            <div id="game-three"></div>
 
-    <script src="/../../../../src/js/three.min.js"></script>
+            <script src="/../../../../javascript/three.min.js"></script>
 
-    <!-- three.js scripts -->
-		<script src="/../../../../src/js/fx/EffectComposer.js"></script>
+            <!-- Imports for the main script -->
 
-		<script src="/../../../../src/js/fx/RenderPass.js"></script>
-		<script src="/../../../../src/js/fx/ShaderPass.js"></script>
-		<script src="/../../../../src/js/fx/OutlinePass.js"></script>
-		<script src="/../../../../src/js/fx/SAOPass.js"></script>
-		<script src="/../../../../src/js/fx/SMAAPass.js"></script>
-		<script src="/../../../../src/js/fx/MaskPass.js"></script>
+            <!-- Objects -->
+            <script src="/../../../../objects/Renderer.js"></script>
+            <script src="/../../../../objects/Scene.js"></script>
+            <script src="/../../../../objects/Camera.js"></script>
+            <script src="/../../../../objects/Props.js"></script>
+            <script src="/../../../../objects/UI.js"></script>
+            <script src="/../../../../objects/Dice.js"></script>
+            <script src="/../../../../objects/Opponent.js"></script>
 
-		<script src="/../../../../src/js/fx/CopyShader.js"></script>
-		<script src="/../../../../src/js/fx/DepthLimitedBlurShader.js"></script>
-		<script src="/../../../../src/js/fx/UnpackDepthRGBAShader.js"></script>
-		<script src="/../../../../src/js/fx/SMAAShader.js"></script>
-		<script src="/../../../../src/js/fx/SAOShader.js"></script>
-    <!-- end of three.js scripts -->
+            <!-- Functions -->
+            <script src="/../../../../javascript/communications.js"></script>
+            <script src="/../../../../javascript/handlers.js"></script>
+            <script src="/../../../../javascript/events.js"></script>
 
-    <!-- imports for the main script -->
-    <script src="/../../../../scripts/communications.js"></script>
-    <script src="/../../../../scripts/handlers.js"></script>
-    <script src="/../../../../scripts/initializers.js"></script>
-    <script src="/../../../../scripts/updaters.js"></script>
-    <!-- end of imports for the main script -->
+            <!-- End of imports for the main script -->
 
-    <!-- MAIN SCRIPT -->
-    <script src="/../../../../scripts/render.js"></script>
-  </body>
+            <!-- MAIN SCRIPT -->
+            <script src="/../../../../javascript/game.js"></script>
+        </div>
+    </body>
 </html>
