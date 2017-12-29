@@ -1,0 +1,70 @@
+@font-face {
+    font-family: "gill";
+    src: url("/../../../../styles/gill.ttf") format("truetype");
+}
+
+@keyframes appear {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    font-family: "gill";
+    margin: 0;
+    overflow: hidden;
+    -webkit-animation: appear 2s;
+    background-color: #050505;
+}
+
+#game-status {
+    z-index: 1;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    margin-top: 10px;
+    padding-left: 10px;
+    font-family: inherit;
+    color: rgb(200, 200, 200);
+    font-size: 18px;
+    text-align: left;
+    vertical-align: middle;
+    letter-spacing: 4px;
+    overflow: hidden;
+    user-select: none;
+
+    width: 320px;
+    height: 60px;
+    /*border: solid 2px rgb(200, 200, 200);*/
+    background: none;
+    animation: .6s ease-out appear;
+    animation-fill-mode: both;
+    animation-delay: 1.4s;
+}
+
+#status-foot {
+    position: absolute;
+    margin-top: 10px;
+    bottom: 0;
+    right: 0;
+    width: 200px;
+    border-top: solid 2px rgb(200, 200, 200);
+}
+
+#logger {
+    position: absolute;
+    text-transform: uppercase;
+    right: 0;
+}
+
+#current-player {
+    display: inline;
+    font-size: 24px;
+    letter-spacing: 4px;
+    font-weight: bold;
+    text-align: right;
+}
+
+#game-three {
+    z-index: 0;
+    position: absolute;
+}
