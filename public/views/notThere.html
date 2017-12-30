@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Roll the dice babe!</title>
+    <link rel="stylesheet" href="./../../../../styles/style.css">
+  </head>
+  <body>
+
+  <div class="back"></div>
+  <div id="login-three"></div>
+    <div class="joinGameWrapper">
+      <img src="./../../../../styles/icon-large.png" alt="Le logo d'Emile" width="64px" height="64px" style="margin-top: 15px;">
+      <h1>emile.io</h1>
+        <div class="info">
+            <!-- <label for="inputPlayerName">Your Name:</label> -->
+            <input id="inputPlayerName" type="text" placeholder="Nickname" />
+        </div>
+
+        <div class="info">
+            <!-- <label for="inputGameId">Game ID:</label> -->
+            <input id="inputGameId" type="text" placeholder="Game ID"/>
+        </div>
+
+        <div class="info buttons">
+            <button id="btnStart" class="btn"><strong>Start</strong></button>
+            <button id="btnResume" class="btn"><strong>Resume</strong></button>
+            <div id="pleaseChangeName">
+                <p>
+                    This player is not in the room you have selected, please check the spelling of your nickname.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript libraries -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="./../../../../scripts/welcome-screen.js"></script>
+    <script src="./../../../../scripts/lobby.js"></script>
+
+  </body>
+</html>

@@ -1,24 +1,16 @@
-/* To install node modules:
-        npm init
-
-   If it doesn't work, enter the following lines:
-        npm install express --save
-        npm install socket.io --save
-        npm install cannon --save
-        npm install nodemon --save-dev -g
-
-   Start with command: nodemon app */
-
-
 // Server requirements
 var express = require('express');
 var socket = require('socket.io');
+var cookieParser = require('cookie-parser');
 
-// Game requirements
-var Hub = require('./resources/objects/Hub.js');
+
+// Game logic requirements
+var Game = require('./objects/Game');
+
 
 // Starting app
 var app = express();
+app.use(cookieParser());
 
 
 // Starting server and socket.io module
@@ -27,38 +19,73 @@ var io = socket(server);
 
 
 // Folders the server uses
-app.use('/styles', express.static('public/resources/styles'));
-app.use('/objects', express.static('public/resources/objects'));
-app.use('/images', express.static('public/resources/images'));
-app.use('/javascript', express.static('public/resources/javascript'));
+app.use('/styles', express.static('public/styles'));
+app.use('/src', express.static('public/src'));
+app.use('/tex', express.static('public/tex'));
+app.use('/scripts', express.static('public/scripts'));
 app.use('/views', express.static('public/views'));
 
 
-// Starting game manager
-var hub = new Hub(io);
+// Initializing game logic
+var game = new Game(io);
 
 
 // When client asks for /join page
-app.get('/join', function(request, response) {
-    response.sendFile(__dirname + '/public/views/join.html');
+app.get('/join', function(req, res) {
+    if (req.cookies.alreadyConnectedOnce){
+        var cookieContent = {playerName: req.cookies.playerName, roomId: req.cookies.roomId, url: req.cookies.url};
+        console.log(cookieContent);
+        res.redirect(cookieContent.url + '/play/rooms/' + cookieContent.roomId + '/players/' + cookieContent.playerName);
+    }
+    else{
+        res.sendFile(__dirname + '/public/views/join.html');
+    }
 });
 
 
-// When client asks for /play page (to either directly join a new game or resume one)
-app.get('/play/rooms/:id/players/:name', function(request, response) {
+// When client asks for /play page (to either join a new game or resume one)
+app.get('/play/rooms/:roomId/players/:playerName', function(req, res) {
     // Store request parameters
-    var name = request.params.name, id = request.params.id;
+    var name = req.params.playerName;
+    var id = req.params.roomId;
 
-    // Invokes the connection manager and sends its redirection file
-    var redirect = hub.requestHandler(name, id);
-    response.sendFile(__dirname + redirect);
+    // Does the room already exist?
+    if (game.rooms[id]) {
+    // Yes it does: is the requested player in that room?
+        if (game.rooms[id].players[name]) {
+            // Yes he is: is he currenty connected? (does he have an active socket?)
+            if (game.rooms[id].players[name].socket)
+            // Yes he is: the player can't join
+                res.sendFile(__dirname + '/public/views/alreadyConnected.html');
+            else {
+                // No he isn't: the player can resume
+                res.sendFile(__dirname + '/public/views/play.html');
+                io.on('connection', function(socket) {
+                    if(!game.rooms[id].players[name].socket) // To avoid tab duplication issues
+                        game.rooms[id].resumePlayer(name, socket);
+                });
+            }
+        } else {
+            // No he isn't: is the room full?
+            if (game.rooms[id].isFull())
+            // Yes it is: player can't join...
+                res.sendFile(__dirname + '/public/views/roomFull.html');
+            else {
+                // No it isn't: player can join, wait for connection, add the player
+                res.sendFile(__dirname + '/public/views/play.html');
+                io.on('connection', function(socket) {
+                    if (!game.rooms[id].players[name]) // To avoid tab duplication issue
+                        game.rooms[id].addPlayer(name, socket);
+                });
+            }
+        }
+    } else {
+    // No it doesn't: create a new room, wait for connection, add the first player
+        game.addRoom(id);
+        res.sendFile(__dirname + '/public/views/play.html');
+        io.on('connection', function(socket) {
+            if (!game.rooms[id].players[name]) // To avoid tab duplication issue
+                game.rooms[id].addPlayer(name, socket);
+        });
+    }
 });
-
-
-// When the player socket connects (on play page), must be called outside app.get to avoid function duplication
-io.on('connection', function(socket) {
-    hub.connectionHandler(socket);
-});
-
-
-// End of file
