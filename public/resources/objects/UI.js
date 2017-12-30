@@ -6,8 +6,6 @@ class Player {
     }
 }
 
-
-
 class UI extends THREE.Group {
     constructor() {
         super();

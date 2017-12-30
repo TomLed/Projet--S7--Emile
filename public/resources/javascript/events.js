@@ -52,6 +52,17 @@ function onDocumentMouseUp(event) {
                 break;
             }
         }
+
+        for (var i in opponents) {
+            if (intersected == opponents[i].tix) {
+                handleChoice(opponents[i].nickname);
+            }
+        }
+
+        if (intersected == ui.roll) rollDices();
+
+        if (intersected == ui.end) handleChoice(player.name);
+
     } else {
         logger('click timed out');
     }

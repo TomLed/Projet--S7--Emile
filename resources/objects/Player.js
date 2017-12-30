@@ -21,7 +21,7 @@ module.exports = class {
         });
 
         this.socket.on('end turn', function(data) {
-            this.player.nextPlayer(thisPlayerName);
+            this.player.endTurn(data.name);
         });
 
         this.socket.on('update dice', function(data) {
@@ -33,32 +33,33 @@ module.exports = class {
         });
     }
 
+    endTurn(name) {
+        var action = this.room.emile.updateScore(this, name);
+        if (action.can) {
+            this.room.emile.nextPlayer(this);
+            this.room.io.to(this.room.id).emit('dice updated', {reserve: this.room.emile.reserve});
+            this.room.io.to(this.room.id).emit('end turn', {currentPlayerName: this.room.emile.currentPlayer.name, scores: this.room.emile.scores});
+        } else {
+            this.socket.emit('not allowed', {reason: action.reason});
+        }
+    }
+
     rollDices() {
         var action = this.room.emile.rollDices(this);
         if (action.can) {
             this.room.io.to(this.room.id).emit('dices rolled', {coordinates: action.coordinates, faces: action.faces});
+            if (this.room.emile.checkEnd(this)) {
+                this.socket.emit('cannot play anymore');
+            }
         } else {
             this.socket.emit('not allowed', {reason: action.reason});
         }
-
-        // TODO
-        // var action = this.room.emile.checkEnd(this);
-        // could possibly fire .nextPlayer()
     }
 
     updateDice(index) {
         var action = this.room.emile.updateDice(this, index);
         if (action.can) {
             this.room.io.to(this.room.id).emit('dice updated', {reserve: action.reserve});
-        } else {
-            this.socket.emit('not allowed', {reason: action.reason});
-        }
-    }
-
-    nextPlayer() {
-        action = this.room.emile(this);
-        if (action.can) {
-            this.room.io.to(this.room.id).emit('next turn', {name: action.name});
         } else {
             this.socket.emit('not allowed', {reason: action.reason});
         }

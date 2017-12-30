@@ -2,6 +2,10 @@ function rollDices() {
     socket.emit('roll dices');
 }
 
+function handleChoice(name) {
+    socket.emit('end turn', {name: name});
+}
+
 function updateDice(index) {
     socket.emit('update dice', {index: index});
 }
@@ -18,9 +22,9 @@ function addPlayer(name, index, score) {
         if (index == 0) {
             return {x: -2, y: 1, z: 0};
         } else if (index == 1) {
-            return {x: 2, y: 1, z: 0};
-        } else {
             return {x: 0, y: 1, z: -2};
+        } else {
+            return {x: 2, y: 1, z: 0};
         }
     }
 
@@ -80,32 +84,5 @@ function updateIntersected() {
         if (latest) if (latest.setEmissive) latest.setEmissive({r: 0, g: 0, b: 0});
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // End

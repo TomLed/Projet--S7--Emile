@@ -33,7 +33,7 @@ class Opponent extends THREE.Group {
         this.score.position.set(0, .2, .1);
         this.add(this.score);
 
-        var tixTex = new THREE.Texture(this.setCanvas('TIX!', '#3b2d72', 192));
+        var tixTex = new THREE.Texture(this.setCanvas('CHOOSE ME', '#3b2d72', 192));
         tixTex.needsUpdate = true;
         tixTex.anisotropy = 8;
         var tixGeo = new THREE.PlaneGeometry(1, .375);
@@ -74,7 +74,13 @@ class Opponent extends THREE.Group {
         canvas.height = height || 128;
 
         context.fillStyle = color;
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.lineWidth="12";
+        context.strokeStyle="white";
+        context.beginPath();
+        context.moveTo(100, canvas.height);
+        context.lineTo(canvas.width - 100, canvas.height);
+        //context.rect(0, 0, canvas.width, canvas.height); //fillRect
+        context.stroke();
         //context.roundRect(10, 10, canvas.width-20, canvas.height-20, 20).fill();
 
         context.fillStyle = '#aaaaaa';

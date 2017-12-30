@@ -18,11 +18,7 @@ module.exports = class {
         console.log('Player added to room', this.id, 'with name', name);
         this.players[name] = new Player(name, socket, this.number, this);
         this.players[name].socket.join(this.id);
-        this.players[name].socket.emit('connected', {name: name,
-                                                     id: this.id,
-                                                     index: this.number,
-                                                     score: this.emile.scores[this.number],
-                                                     reserve: this.emile.reserve});
+        this.players[name].socket.emit('connected', {name: name, id: this.id, index: this.number, score: this.emile.scores[this.number], reserve: this.emile.reserve});
         this.number++;
 
         this.players[name].socket.broadcast.to(this.id).emit('opponent joined', {index: this.players[name].index, name: name, score: this.emile.scores[this.players[name].index]});
@@ -32,7 +28,7 @@ module.exports = class {
             if (this.players[i].name != name) {
                 this.players[name].socket.emit('opponent joined', {index: this.players[i].index,
                                                                    name: this.players[i].name,
-                                                                   score: this.emile.scores[this.players[name].index]});
+                                                                   score: this.emile.scores[this.players[i].index]});
             }
         }
 
@@ -61,7 +57,7 @@ module.exports = class {
 
         for (var i in this.players) {
             if (this.players[i].name != name) {
-                this.players[name].socket.emit('opponent joined', {index: this.players[i].index, name: this.players[i].name, score: this.emile.scores[this.players[name].index]});
+                this.players[name].socket.emit('opponent joined', {index: this.players[i].index, name: this.players[i].name, score: this.emile.scores[this.players[i].index]});
             }
         }
 
