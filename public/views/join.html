@@ -1,43 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>Roll the dice babe!</title>
-    <link rel="stylesheet" href="./../../../../styles/style.css">
-  </head>
-  <body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=540, user-scalable=no">
+        <link rel="icon" href="/../../../../images/logo.ico" />
+        <link rel="stylesheet" href="/../../../../styles/style-join.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+        <title>emile.io</title>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="emile">EMILE<div id="small">2.0</div></div>
+            <div id="description">AN ONLINE DICE GAME</div>
 
-    <div class="back"></div>
-    
-    <div id="login-three"></div>
+            <div id="login">
+                <div id="name">
+                    <input type="text" id="name-input" placeholder="PLAYER NAME"/>
+                    <div id="name-foot"></div>
+                </div>
 
-    <div class="joinGameWrapper">
-      <img src="./../../../../styles/icon-large.png" alt="Le logo d'Emile" width="64px" height="64px" style="margin-top: 15px;">
-      <h1>emile.io</h1>
-        <div class="info">
-            <!-- <label for="inputPlayerName">Your Name:</label> -->
-            <input id="inputPlayerName" type="text" placeholder="Nickname" />
+                <div id="room">
+                    <input type="text" id="room-input" placeholder="ROOM NAME"/>
+                    <div id="room-foot"></div>
+                </div>
+
+                <div id="play">
+                    <button id="play-button">PLAY</button>
+                </div>
+            </div>
         </div>
 
-        <div class="info">
-            <!-- <label for="inputGameId">Game ID:</label> -->
-            <input id="inputGameId" type="text" placeholder="Game ID"/>
+
+        <div id="quality">
+            <div id="quality-text">HIGH QUALITY</div><input id="quality-checkbox" type="checkbox" onchange="changeQuality(this)">
         </div>
 
-        <div class="info buttons">
-            <button id="btnStart" class="btn"><strong>Start</strong></button>
-            <button id="btnResume" class="btn"><strong>Resume</strong></button>
-            <div id="playerWaitingMessage"></div>
-        </div>
-    </div>
+        <div id="dices"></div>
 
-    <!-- JavaScript libraries -->
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-    <script src="./../../../../scripts/lobby.js"></script>
-    <script src="./../../../../src/js/three.min.js"></script>
+        <script src="/../../../../javascript/join-event.js"></script>
 
-    <script src="./../../../../scripts/welcome-background.js"></script>
+        <script src="/../../../../javascript/three.min.js"></script>
 
-  </body>
+        <script src="/../../../../javascript/join-background.js"></script>
+    </body>
 </html>
