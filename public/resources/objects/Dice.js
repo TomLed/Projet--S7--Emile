@@ -146,32 +146,35 @@ class Dice extends THREE.Group {
     }
 
     updateReserve(reserve) {
-        this.reserve = reserve;
 
-        if (this.reserve) {
+        if (reserve != this.reserve) {
+            this.reserve = reserve;
+            if (reserve) {
+                for (var i in ui.inReserve) {
+                    if (!ui.inReserve[i]) {
+                        ui.inReserve[i] = this.reserve;
+                        this.positionInReserve = i;
 
-            var i = 0;
-            while(ui.inReserve[i]) {
-                i++;
+                        THREE.SceneUtils.detach(this.cube, this, scene);
+                        THREE.SceneUtils.attach(this.cube, scene, camera);
+
+                        this.cube.position.set(-.2+.1*i, -.28, -.5);
+                        this.cube.scale.set(.4, .4, .4);
+                        this.showFace();
+
+                        break;
+                    }
+                }
+            } else {
+                ui.inReserve[this.positionInReserve] = this.reserve;
+
+                THREE.SceneUtils.detach(this.cube, camera, scene);
+                THREE.SceneUtils.attach(this.cube, scene, this);
+
+                this.cube.position.set(0, 0, 0);
+                this.cube.rotation.set(0, 0, 0);
+                this.cube.scale.set(1, 1, 1);
             }
-            ui.inReserve[i] = this.reserve;
-            this.positionInReserve = i;
-
-            THREE.SceneUtils.detach(this.cube, this, scene);
-            THREE.SceneUtils.attach(this.cube, scene, camera);
-            this.cube.position.set(-.2+.1*this.positionInReserve, -.28, -.5);
-            this.cube.scale.set(.4, .4, .4);
-            this.showFace();
-        } else {
-
-            ui.inReserve[this.positionInReserve] = this.reserve;
-            this.positionInReserve = undefined;
-
-            THREE.SceneUtils.detach(this.cube, camera, scene);
-            THREE.SceneUtils.attach(this.cube, scene, this);
-            this.cube.position.set(0, 0, 0);
-            this.cube.rotation.set(0, 0, 0);
-            this.cube.scale.set(1, 1, 1);
         }
     }
 

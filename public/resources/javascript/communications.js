@@ -2,6 +2,8 @@ function initConnection() {
     socket = io.connect(window.location.origin);
 
     socket.on('connected', function(data) {
+        for (var i in dices) dices[i].updateReserve(data.reserve[i]);
+        logger('connected');
         addSelf(data.name, data.index, data.score);
     });
 
@@ -12,6 +14,7 @@ function initConnection() {
 
     socket.on('game can start', function(data) {
         $('#current-player').html(data.current);
+        logger('game can start');
     });
 
     socket.on('dices rolled', function(data) {
@@ -26,9 +29,7 @@ function initConnection() {
     });
 
     socket.on('dice updated', function(data) {
-        for (var i in dices) {
-            dices[i].updateReserve(data.reserve[i]);
-        }
+        for (var i in dices) dices[i].updateReserve(data.reserve[i]);
         logger('dice updated');
     });
 }

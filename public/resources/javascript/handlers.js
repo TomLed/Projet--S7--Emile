@@ -24,7 +24,7 @@ function addPlayer(name, index, score) {
         }
     }
 
-    if (opponents[name]) delete opponents[name];
+    if (opponents[name]) scene.remove(opponents[name]);
     opponents[name] = new Opponent(name, index, score);
 
     var pos = setPosition(player.index, index);
