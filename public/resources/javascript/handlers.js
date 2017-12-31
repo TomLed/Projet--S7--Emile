@@ -48,12 +48,10 @@ function updateSim() {
 
         var sequence = coordinates[simStep];
 
-        var j = 0;
         for (i in dices) {
-            if (!dices[i].reserve) {
+            if (!dices[i].reserve && sequence[i]) {
                 dices[i].position.copy(sequence[i].p);
                 dices[i].quaternion.copy(sequence[i].q);
-                j++;
             }
         }
 
