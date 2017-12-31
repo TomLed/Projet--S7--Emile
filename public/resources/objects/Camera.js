@@ -5,12 +5,12 @@ class Camera extends THREE.PerspectiveCamera {
         this.down = true;
         this.y = 1.5;
         this.z = 2.5;
-        this.position.set(0, 1.5, 2.5);
+        this.position.set(0, 1.5, 2);
         this.lookAt(new THREE.Vector3(0, 1, 0).add(scene.position));
     }
 
     update() {
-        if (mouse.y > .75) this.y = 1.5, this.z = 2.5, this.down = true;
+        if (mouse.y > .75) this.y = 1.5, this.z = 2, this.down = true;
         if (mouse.y < -.5) this.y = 2.5, this.z = .5, this.down = false;
 
         this.position.x += (mouse.x * (2.5 - this.position.y) * .25 - this.position.x) / 5;

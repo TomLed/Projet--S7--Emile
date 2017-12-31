@@ -33,7 +33,7 @@ class Opponent extends THREE.Group {
         this.score.position.set(0, .2, .1);
         this.add(this.score);
 
-        var tixTex = new THREE.Texture(this.setCanvas('CHOOSE ME', '#3b2d72', 192));
+        var tixTex = new THREE.Texture(this.setCanvas('CHOOSE ME', '#3b2d72', 192, 'button'));
         tixTex.needsUpdate = true;
         tixTex.anisotropy = 8;
         var tixGeo = new THREE.PlaneGeometry(1, .375);
@@ -51,7 +51,7 @@ class Opponent extends THREE.Group {
         this.name.value = name;
     }
 
-    setCanvas(text, color, height) {
+    setCanvas(text, color, height, type) {
 
         /*CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
             if (w < 2 * r) r = w / 2;
@@ -67,23 +67,25 @@ class Opponent extends THREE.Group {
         };*/
 
         var color = color || '#202020';
+        var type = type || 'info';
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
 
         canvas.width = 512;
         canvas.height = height || 128;
-
-        context.fillStyle = color;
-        context.lineWidth="12";
+        context.lineWidth="16";
         context.strokeStyle="white";
-        context.beginPath();
-        context.moveTo(100, canvas.height);
-        context.lineTo(canvas.width - 100, canvas.height);
-        //context.rect(0, 0, canvas.width, canvas.height); //fillRect
-        context.stroke();
-        //context.roundRect(10, 10, canvas.width-20, canvas.height-20, 20).fill();
 
-        context.fillStyle = '#aaaaaa';
+        if (type == 'info') {
+            context.beginPath();
+            context.moveTo(100, canvas.height);
+            context.lineTo(canvas.width - 100, canvas.height);
+        } else {
+            context.rect(0, 0, canvas.width, canvas.height);
+        }
+
+        context.stroke();
+        context.fillStyle = 'white';
         var textSize = context.measureText(text).width;
         if (textSize > 72) var fontSize = Math.round(canvas.width / textSize * 8);
         else var fontSize = 72;
@@ -91,10 +93,6 @@ class Opponent extends THREE.Group {
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.fillText(text, canvas.width / 2, canvas.height / 2);
-        /*context.shadowColor = '#999';
-    context.shadowBlur = 20;
-    context.shadowOffsetX = 15;
-    context.shadowOffsetY = 15;*/
 
         return canvas;
     }
