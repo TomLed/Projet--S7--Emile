@@ -6,6 +6,7 @@ function initConnection() {
         logger('connected');
         ui.updateScore(data.score);
         addSelf(data.name, data.index, data.score);
+        $('title').html('emile.io - '+ data.name);
     });
 
     socket.on('end turn', function(data) {
@@ -33,7 +34,10 @@ function initConnection() {
     socket.on('dices rolled', function(data) {
         logger('dices rolled');
         coordinates = data.coordinates;
-        for (var i in dices) dices[i].value = data.faces[i];
+        for (var i in dices) {
+            dices[i].updateReserve(data.reserve[i]);
+            dices[i].value = data.faces[i];
+        }
         resetSim();
     });
 
@@ -44,6 +48,7 @@ function initConnection() {
     socket.on('dice updated', function(data) {
         for (var i in dices) dices[i].updateReserve(data.reserve[i]);
         logger('dice updated');
+        if (data.tip) logger(data.tip);
     });
 
     socket.on('cannot play anymore', function(data) {
@@ -51,4 +56,8 @@ function initConnection() {
 
         setTimeout(function() { logger('Please affect your 100 points'); }, 4000);
     });
+
+    socket.on('game over', function(data) {
+        // TODO
+    })
 }
