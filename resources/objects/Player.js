@@ -49,8 +49,10 @@ module.exports = class {
         var action = this.room.emile.rollDices(this);
         if (action.can) {
             this.room.io.to(this.room.id).emit('dices rolled', {coordinates: action.coordinates, faces: action.faces, reserve: action.reserve});
-            if (this.room.emile.checkEnd(this)) {
+            var data = this.room.emile.checkEnd(this)
+            if (data.stuck) {
                 this.socket.emit('cannot play anymore');
+                this.socket.emit('potential updated', {potentialScore: data.deltaScore});
             }
         } else {
             this.socket.emit('not allowed', {reason: action.reason});

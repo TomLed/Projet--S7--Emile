@@ -33,10 +33,8 @@ module.exports = class {
                     if (this.stuck) {
                         if (reserveLength == 0) {
                             tempScore += this.currentPlayer.name == name ? -1000 : 500;
-                            player.socket.emit('potential updated', {potentialScore: -1000});
                         } else {
                             tempScore += this.currentPlayer.name == name ? -100 : 100;
-                            player.socket.emit('potential updated', {potentialScore: -100});
                         }
                     } else tempScore += this.currentPlayer.name == name ? this.potentialScore : -this.potentialScore / 2;
 
@@ -126,7 +124,13 @@ module.exports = class {
             }
         }
         this.stuck = true;
-        return this.stuck;
+
+        //For reserve score updating if stuck
+        var reserveLength = 0;
+        for (var i in this.reserve) if (this.reserve[i]) reserveLength++;
+
+        if (reserveLength == 0) return {stuck: this.stuck, deltaScore: -1000};
+        else return {stuck: this.stuck, deltaScore: -100};
     }
 
     nextPlayer(player) {
