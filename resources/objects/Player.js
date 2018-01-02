@@ -72,5 +72,11 @@ module.exports = class {
     disconnect() {
         console.log('lost connection with', this.name);
         delete this.socket;
+        /*
+        Does the socket room still exist? If it's empty then delete the room from the server
+        * if (!this.io.sockets.adapter.rooms[id]) {
+        *    delete this;
+        * } 
+        */
     }
 }
