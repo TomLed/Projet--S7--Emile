@@ -49,7 +49,8 @@ function initConnection() {
     });
 
     socket.on('potential updated', function(data) {
-        ui.updatePotentialScore(data.potentialScore);
+        if (data.timeout) setTimeout(function() { ui.updatePotentialScore(data.potentialScore); }, data.timeout);
+        else ui.updatePotentialScore(data.potentialScore);
     });
 
     socket.on('dice updated', function(data) {

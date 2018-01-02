@@ -52,7 +52,7 @@ module.exports = class {
             var data = this.room.emile.checkEnd(this)
             if (data.stuck) {
                 this.socket.emit('cannot play anymore');
-                this.socket.emit('potential updated', {potentialScore: data.deltaScore});
+                this.socket.emit('potential updated', {potentialScore: data.deltaScore, timeout: 4000});
             }
         } else {
             this.socket.emit('not allowed', {reason: action.reason});
@@ -76,7 +76,7 @@ module.exports = class {
         Does the socket room still exist? If it's empty then delete the room from the server
         * if (!this.io.sockets.adapter.rooms[id]) {
         *    delete this;
-        * } 
+        * }
         */
     }
 }
