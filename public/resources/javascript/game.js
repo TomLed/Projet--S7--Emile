@@ -42,6 +42,9 @@ function initGame() {
     light1 = new PointLight(0, 2, -1, 0xffaa88);
     scene.add(light1);
 
+    light2 = new PointLight(0, 2, 1, 0x88aaff);
+    scene.add(light2);
+
     ambient = new THREE.AmbientLight(0x88aaff, .7);
     scene.add(ambient);
 

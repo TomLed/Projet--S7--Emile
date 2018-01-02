@@ -45,18 +45,32 @@ class UI extends THREE.Group {
 
         this.scoreTex = new THREE.Texture(this.setCanvas(this.score));
         this.scoreTex.needsUpdate = true;
-        var scoreGeo = new THREE.PlaneGeometry(.2, .05);
+        var scoreGeo = new THREE.PlaneGeometry(.28, .07);
         var scoreMat = new THREE.MeshBasicMaterial({map: this.scoreTex, transparent: true, opacity: 1});
 
         this.scoreMesh = new THREE.Mesh(scoreGeo, scoreMat);
-        this.scoreMesh.position.set(0, -.18, -.45);
+        this.scoreMesh.position.set(0, -.165, -.45);
         this.add(this.scoreMesh);
+
+        this.potentialTex = new THREE.Texture(this.setCanvas(0));
+        this.potentialTex.needsUpdate = true;
+        var potentialGeo = new THREE.PlaneGeometry(.16, .04);
+        var potentialMat = new THREE.MeshBasicMaterial({map: this.potentialTex, transparent: true, opacity: 1});
+
+        this.potentialMesh = new THREE.Mesh(potentialGeo, potentialMat);
+        this.potentialMesh.position.set(0, -.195, -.45);
+        this.add(this.potentialMesh);
     }
 
     updateScore(score) {
         this.score = score;
         this.scoreMesh.material.map = new THREE.Texture(this.setCanvas(score));
         this.scoreMesh.material.map.needsUpdate = true;
+    }
+
+    updatePotentialScore(score) {
+        this.potentialMesh.material.map = new THREE.Texture(this.setCanvas(score));
+        this.potentialMesh.material.map.needsUpdate = true;
     }
 
     setCanvas(text) {

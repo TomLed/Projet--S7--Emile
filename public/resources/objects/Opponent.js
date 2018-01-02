@@ -39,7 +39,7 @@ class Opponent extends THREE.Group {
         var tixGeo = new THREE.PlaneGeometry(1, .375);
         var tixMat = new THREE.MeshStandardMaterial({map: tixTex, transparent: true, side: THREE.DoubleSide, roughness: .8});
         this.tix = new THREE.Mesh(tixGeo, tixMat);
-        this.tix.position.set(0, -.175, .1);
+        this.tix.position.set(0, -.3, .1);
 
         this.tix.setEmissive = function(emission) {
             this.material.emissive = emission;
@@ -52,19 +52,6 @@ class Opponent extends THREE.Group {
     }
 
     setCanvas(text, color, height, type) {
-
-        /*CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-            if (w < 2 * r) r = w / 2;
-            if (h < 2 * r) r = h / 2;
-            this.beginPath();
-            this.moveTo(x+r, y);
-            this.arcTo(x+w, y,   x+w, y+h, r);
-            this.arcTo(x+w, y+h, x,   y+h, r);
-            this.arcTo(x,   y+h, x,   y,   r);
-            this.arcTo(x,   y,   x+w, y,   r);
-            this.closePath();
-            return this;
-        };*/
 
         var color = color || '#202020';
         var type = type || 'info';
@@ -87,8 +74,8 @@ class Opponent extends THREE.Group {
         context.stroke();
         context.fillStyle = 'white';
         var textSize = context.measureText(text).width;
-        if (textSize > 72) var fontSize = Math.round(canvas.width / textSize * 8);
-        else var fontSize = 72;
+        if (textSize > 96) var fontSize = Math.round(canvas.width / textSize * 16);
+        else var fontSize = 96;
         context.font = fontSize + 'px gill';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
