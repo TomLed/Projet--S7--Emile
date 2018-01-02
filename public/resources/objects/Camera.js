@@ -4,7 +4,7 @@ class Camera extends THREE.PerspectiveCamera {
         this.look = new THREE.Vector3();
         this.down = true;
         this.y = 1.5;
-        this.z = 2.5;
+        this.z = 2;
         this.position.set(0, 1.5, 2);
         this.lookAt(new THREE.Vector3(0, 1, 0).add(scene.position));
     }

@@ -62,7 +62,7 @@ module.exports = class {
         }
 
         if (this.number == 4) {
-            this.players[name].socket.emit('game can start', {current: this.emile.currentPlayer.name});
+            if (this.emile.currentPlayer) this.players[name].socket.emit('game can start', {current: this.emile.currentPlayer.name});
         }
 
     }

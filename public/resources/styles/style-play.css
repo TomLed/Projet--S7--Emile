@@ -16,6 +16,31 @@ body {
     background-color: #050505;
 }
 
+#game-end {
+    position: absolute;
+    color: rgb(200, 200, 200);
+    margin-top: 100px;
+    height: 300px;
+    width: 300px;
+    left: 50%;
+    margin-top: 140px;
+    font-size: 36px;
+    letter-spacing: 8px;
+    text-align: center;
+    padding-top: 20px;
+    transform: translate(-50%);
+    z-index: 3;
+    visibility: hidden;
+    background: rgba(0, 0, 0, .7);
+    box-shadow: 0 0 15px rgba(0, 0, 0, .6);
+}
+
+#results {
+    padding-top: 20px;
+    font-size: 28px;
+    letter-spacing: 6px;
+}
+
 #game-status {
     z-index: 1;
     position: absolute;
@@ -67,4 +92,46 @@ body {
 #game-three {
     z-index: 0;
     position: absolute;
+}
+
+#back-button {
+    outline: none;
+    font-family: inherit;
+    color: rgb(200, 200, 200);
+    font-size: 28px;
+    text-align: center;
+    vertical-align: middle;
+    letter-spacing: 6px;
+    width: 240px;
+    height: 50px;
+    margin-top: 20px;
+    border: solid 2px rgb(200, 200, 200);
+    background: none;
+    transition: .1s ease-in-out;
+    animation: .8s ease-out button-appear;
+    animation-fill-mode: both;
+    animation-delay: 1.4s;
+
+}
+
+#back-button:hover {
+    outline: none;
+    cursor: pointer;
+    background: rgba(200, 200, 200, .4);
+}
+
+#back-button:focus {
+    outline: none;
+    cursor: pointer;
+    background: rgba(200, 200, 200, .4);
+}
+
+#back-button:active {
+    transition: .05s;
+    border: solid 2px rgb(200, 200, 200);
+    color: rgb(200, 200, 200);
+    font-size: 26px;
+    letter-spacing: 5px;
+    outline: none;
+    background: rgba(200, 200, 200, .4);
 }

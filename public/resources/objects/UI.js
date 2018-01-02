@@ -17,6 +17,7 @@ class UI extends THREE.Group {
         var reserveGeo = new THREE.PlaneGeometry(.5, .1);
         this.reserve = new THREE.Mesh(reserveGeo, reserveMat);
         this.reserve.position.set(0, -.28, -.5);
+        this.reserve.noSelect = true;
         this.add(this.reserve);
 
         var rollGeo = new THREE.PlaneGeometry(.1, .1);
@@ -50,6 +51,7 @@ class UI extends THREE.Group {
 
         this.scoreMesh = new THREE.Mesh(scoreGeo, scoreMat);
         this.scoreMesh.position.set(0, -.165, -.45);
+        this.scoreMesh.noSelect = true;
         this.add(this.scoreMesh);
 
         this.potentialTex = new THREE.Texture(this.setCanvas(0));
@@ -59,6 +61,7 @@ class UI extends THREE.Group {
 
         this.potentialMesh = new THREE.Mesh(potentialGeo, potentialMat);
         this.potentialMesh.position.set(0, -.195, -.45);
+        this.potentialMesh.noSelect = true;
         this.add(this.potentialMesh);
     }
 

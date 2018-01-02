@@ -21,6 +21,7 @@ function initConnection() {
         // Some player got tixed!
         if (data.tixedPlayerName) logger(data.tixedPlayerName == player.name ? 'You got tixed!' : data.tixedPlayerName + ' got tixed!');
         // Next turn
+        currentName = data.currentPlayerName;
         $('#current-player').html(data.currentPlayerName);
     });
 
@@ -30,6 +31,7 @@ function initConnection() {
     });
 
     socket.on('game can start', function(data) {
+        currentName = data.current;
         $('#current-player').html(data.current);
         logger('game can start');
     });
@@ -37,6 +39,8 @@ function initConnection() {
     socket.on('dices rolled', function(data) {
         logger('dices rolled');
         coordinates = data.coordinates;
+        Cookies.set('positions', JSON.stringify({positions: coordinates[coordinates.length-1]}));
+        Cookies.set('values', JSON.stringify({faces: data.faces}));
         for (var i in dices) {
             dices[i].updateReserve(data.reserve[i]);
             dices[i].value = data.faces[i];
@@ -59,15 +63,28 @@ function initConnection() {
     });
 
     socket.on('cannot play anymore', function(data) {
-        setTimeout(function() { logger('You cannot play anymore'); }, 2000);
+        setTimeout(function() { logger('You can\'t play anymore'); }, 2000);
 
         setTimeout(function() { logger('Please affect the points'); }, 4000);
     });
 
     socket.on('game over', function(data) {
         logger('Game is over!');
-        if (confirm('Game over!', data.winner, 'won! Please click here to go back to the lobby!')) {
-            window.location.replace(window.location.origin + '/join');
+
+        player.score = data.scores[player.index];
+        for (var i in opponents) opponents[i].updateScore(data.scores[opponents[i].index]);
+
+        rank = [[player.name, player.score]];
+        for (var i in opponents) {
+            rank.push([opponents[i].nickname, opponents[i].value]);
         }
+        rank.sort(function(a, b) { return b[1] - a[1] });
+
+        for (var i in rank) {
+            var pos = parseInt(i) + 1;
+            $('#results').append(pos + ' - ' + rank[i][0] + ' - ' + rank[i][1]+'<br>');
+        }
+
+        $('#game-end').css({'visibility':'visible', 'animation':'appear 1s'});
     });
 }
