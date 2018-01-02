@@ -36,10 +36,10 @@ module.exports = class {
     endTurn(name) {
         var action = this.room.emile.updateScore(this, name);
         if (action.can) {
-            /* if (action.gameOver) this.room.io.to(this.room.id).emit('game over', {winner: action.winner, score: this.room.emile.scores}); */
+            if (action.gameOver) this.room.io.to(this.room.id).emit('game over', {winner: name, scores: this.room.emile.scores});
             this.room.emile.nextPlayer(this);
             this.room.io.to(this.room.id).emit('dice updated', {reserve: this.room.emile.reserve});
-            this.room.io.to(this.room.id).emit('end turn', {currentPlayerName: this.room.emile.currentPlayer.name, scores: this.room.emile.scores});
+            this.room.io.to(this.room.id).emit('end turn', {currentPlayerName: this.room.emile.currentPlayer ? this.room.emile.currentPlayer.name : '', scores: this.room.emile.scores, tixedPlayerName: action.tixedPlayerName});
         } else {
             this.socket.emit('not allowed', {reason: action.reason});
         }
@@ -60,6 +60,7 @@ module.exports = class {
     updateDice(index) {
         var action = this.room.emile.updateDice(this, index);
         if (action.can) {
+            this.socket.emit('potential updated', {potentialScore: action.potentialScore});
             this.room.io.to(this.room.id).emit('dice updated', {reserve: action.reserve, tip: action.tip});
         } else {
             this.socket.emit('not allowed', {reason: action.reason});

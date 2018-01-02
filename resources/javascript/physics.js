@@ -134,7 +134,7 @@ function getFaces(c) {
     for (var i in c) {
         var a = new CANNON.Vec3();
         c[i].q.toEuler(a);
-        faces.push(getFace(a));
+        faces[i] = getFace(a);
     }
 
     return faces;

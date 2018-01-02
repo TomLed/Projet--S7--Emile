@@ -2,6 +2,7 @@ class Sprite extends THREE.Sprite {
     constructor() {
         var spriteMat = new THREE.SpriteMaterial();
         super(spriteMat);
+        this.isSprite = true;
 
         this.cv = document.createElement('canvas');
         this.cv.width = 128;

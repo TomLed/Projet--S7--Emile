@@ -1,13 +1,5 @@
-/* TODO list
-
-tix
-fin de jeu
-retirer ou relancer que si nv score reserve > score reserve actuel
-
-*/
-
-
 var PHYSICS = require('./../javascript/physics');
+
 
 module.exports = class {
     constructor(room) {
@@ -18,43 +10,55 @@ module.exports = class {
         this.inBrelan = new Array(5).fill(false);
         this.currentPlayer;
         this.potentialScore = 0;
+        this.previousPotentialScore = undefined;
         this.deubeul = false;
-        this.tix = false;
         this.stuck = false;
         this.brelanOnes = 0;
         this.brelanFives = 0;
         this.brelanType = 0;
         this.inStraight = false;
+        this.gameOver = false;
     }
 
     updateScore(player, name) {
         if (player == this.currentPlayer) {
+            if (this.previousPotentialScore < this.potentialScore || this.stuck) {
 
-            // TODO if game over...
+                var reserveLength = 0;
+                for (var i in this.reserve) if (this.reserve[i]) reserveLength++;
+                if (reserveLength != 5) {
 
-            // TODO if (name == this.currentPlayer.name) {}
-
-            if (this.tix) {
-                // can tix TODO
-            } else {
-
-                if (this.stuck) {
-                    this.scores[this.room.players[name].index] += this.currentPlayer.name == name ? -100 : 100;
-                    return {can: true};
-                } else {
                     var tempScore = this.scores[this.room.players[name].index];
 
-                    tempScore += this.currentPlayer.name == name ? this.potentialScore : -this.potentialScore / 2;
+                    if (this.stuck) {
+                        if (reserveLength == 0) {
+                            tempScore += this.currentPlayer.name == name ? -1000 : 500;
+                            player.socket.emit('potential updated', {potentialScore: -1000});
+                        } else {
+                            tempScore += this.currentPlayer.name == name ? -100 : 100;
+                            player.socket.emit('potential updated', {potentialScore: -100});
+                        }
+                    } else tempScore += this.currentPlayer.name == name ? this.potentialScore : -this.potentialScore / 2;
 
                     if (tempScore < -2500) tempScore = -2500 - (2500 + tempScore);
                     if (tempScore > 2500) tempScore = 2500 - (tempScore - 2500);
 
                     this.scores[this.room.players[name].index] = tempScore;
 
-                    return {can: true};
-                }
+                    var tixedPlayerName = undefined;
+                    for (var n in this.room.players) {
+                        if (this.scores[this.room.players[name].index] == this.scores[this.room.players[n].index] && n != name) {
+                            this.scores[this.room.players[n].index] = 0;
+                            tixedPlayerName = this.room.players[n].name;
+                        }
+                    }
 
-            }
+                    if (tempScore == 2500) {
+                        this.gameOver = true;
+                        return {can: true, gameOver: true};
+                    } else return {can: true, gameOver: false, tixedPlayerName: tixedPlayerName};
+                } else return {can: false, reason: 'reserve full, roll again'};
+            } else return {can: false, reason: 'score must be > than before'};
         } else {
             if (this.room.isFull()) {
                 return {can: false, reason: 'not your turn'};
@@ -130,19 +134,21 @@ module.exports = class {
         var newIndex = (this.currentPlayer.index + 1) % 4;
 
         this.potentialScore = 0;
-        this.tix = false;
+        this.previousPotentialScore = undefined; //To make it work at the first round
         this.stuck = false;
         this.brelanOnes = 0;
         this.brelanFives = 0;
         this.brelanType = 0;
         this.deubeul = false;
 
-        for (var i in this.room.players) {
-            if (this.room.players[i].index == newIndex) {
-                this.currentPlayer = this.room.players[i];
-                break;
+        if (!this.gameOver) { //Look for the next player {
+            for (var i in this.room.players) {
+                if (this.room.players[i].index == newIndex) {
+                    this.currentPlayer = this.room.players[i];
+                    break;
+                }
             }
-        }
+        } else this.currentPlayer = undefined; //else the game is stopped
 
         this.dices.fill(0);
         this.inBrelan.fill(false);
@@ -153,88 +159,80 @@ module.exports = class {
         /* TODO With this implementation we cannot choose to remove the dice we want, we can only remove the last dice of the reserve */
 
         if (player == this.currentPlayer) {
-            var reserveFull = true;
+            /* At first, prevPotScore = undefined. Javascript comparison btw undefined and integers returns false in all cases. Exploiting this javascript loophole to only let the player roll dices the first time */
+            if (!(this.previousPotentialScore >= this.potentialScore)) {
+                if (!this.stuck) {
 
-            //Deubeul
-            var reserveLength = 0;
-            for (var i in this.reserve) {
-                if (this.reserve[i]) reserveLength++;
-            }
+                    //Deubeul
+                    var reserveLength = 0;
+                    for (var i in this.reserve) if (this.reserve[i]) reserveLength++;
 
-            if (reserveLength == 5 && this.deubeul) {
-                console.log('NEW ROLL');
-                this.reserve.fill(false);
-                this.inBrelan.fill(false);
-                this.brelanOnes = 0;
-                this.brelanFives = 0;
-                this.brelanType = 0;
-                this.deubeul = false;
-            }
+                    this.previousPotentialScore = this.potentialScore;
 
-            if (reserveLength == 4) {
-                this.deubeul = true;
-            } else {
-                this.deubeul = false;
-            }
-
-            //These two loops tell if the dices are part of a brelan or not
-            if (this.brelanFives >= 3) {
-                var j = 0;
-                for (var i in this.dices) {
-                    if (this.reserve[i] && this.dices[i] == 5) {
-                        this.inBrelan[i] = true;
-                        j++;
+                    if (reserveLength == 5) {
+                        this.reserve.fill(false);
+                        this.inBrelan.fill(false);
+                        this.brelanOnes = 0;
+                        this.brelanFives = 0;
+                        this.brelanType = 0;
+                        this.deubeul = false;
+                        reserveLength = 0;
                     }
-                    if (j >= 3) break;
-                }
-            }
 
-            if (this.brelanOnes >= 3) {
-                var j = 0;
-                for (var i in this.dices) {
-                    if (this.reserve[i] && this.dices[i] == 1) {
-                        this.inBrelan[i] = true;
-                        j++;
+                    if (reserveLength == 4) {
+                        this.deubeul = true;
+                    } else {
+                        this.deubeul = false;
                     }
-                    if (j >= 3) break;
-                }
-            }
 
-            if (this.brelanType) {
-                var j = 0;
-                for (var i in this.dices) {
-                    if (this.reserve[i] && this.dices[i] == this.brelanType) {
-                        this.inBrelan[i] = true;
-                        j++;
+                    //These two loops tell if the dices are part of a brelan or not
+                    if (this.brelanFives >= 3) {
+                        var j = 0;
+                        for (var i in this.dices) {
+                            if (this.reserve[i] && this.dices[i] == 5) {
+                                this.inBrelan[i] = true;
+                                j++;
+                            }
+                            if (j >= 3) break;
+                        }
                     }
-                    if (j >= 3) break;
-                }
-            }
 
-            this.brelanFives = 0, this.brelanOnes = 0, this.brelanType = 0;
-
-            for (var i in this.reserve) {
-                if (!this.reserve[i]) {
-                    reserveFull = false;
-                    break;
-                }
-            }
-
-            if (!reserveFull) {
-                var roll = PHYSICS.simulate(this.reserve);
-
-                var j = 0;
-                for (var i in this.reserve) {
-                    if (!this.reserve[i]) {
-                        this.dices[i] = roll.faces[j];
-                        j++;
+                    if (this.brelanOnes >= 3) {
+                        var j = 0;
+                        for (var i in this.dices) {
+                            if (this.reserve[i] && this.dices[i] == 1) {
+                                this.inBrelan[i] = true;
+                                j++;
+                            }
+                            if (j >= 3) break;
+                        }
                     }
-                }
 
-                return {can: true, coordinates: roll.coordinates, faces: this.dices, reserve: this.reserve};
-            } else {
-                return {can: false, reason: 'all dices in reserve'};
-            }
+                    if (this.brelanType) {
+                        var j = 0;
+                        for (var i in this.dices) {
+                            if (this.reserve[i] && this.dices[i] == this.brelanType) {
+                                this.inBrelan[i] = true;
+                                j++;
+                            }
+                            if (j >= 3) break;
+                        }
+                    }
+
+                    this.brelanFives = 0, this.brelanOnes = 0, this.brelanType = 0;
+
+                    var roll = PHYSICS.simulate(this.reserve);
+
+                    for (var i in this.reserve) {
+                        if (!this.reserve[i]) {
+                            this.dices[i] = roll.faces[i];
+                        }
+                    }
+
+                    return {can: true, coordinates: roll.coordinates, faces: this.dices, reserve: this.reserve};
+
+                } else return {can: false, reason: 'you\'re stuck :('};
+            } else return {can: false, reason: 'score must be > than before'};
         } else {
             if (this.room.isFull()) {
                 return {can: false, reason: 'not your turn'};
@@ -247,16 +245,15 @@ module.exports = class {
     updateDice(player, index) {
         var response = {};
 
-        // TODO must add all check about score : if new score < prev score, can't change
-
         if (player == this.currentPlayer) {
             if (this.dices[index]) {
+                //If the clicked dice is already in reserve, reset the reserve and put it out
                 if (this.reserve[index]) {
                     if (this.inStraight) {
                         this.potentialScore -= this.getScore('straight', false);
                         this.inStraight = false;
                         this.reserve.fill(false);
-                        response = {can: true, reserve: this.reserve};
+                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
                     } else if (!this.inBrelan[index]) {
                         this.reserve[index] = false;
 
@@ -272,10 +269,11 @@ module.exports = class {
                             this.brelanType = 0;
                         }
 
-                        response = {can: true, reserve: this.reserve};
+                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
                     } else {
                         response = {can: false, reason: 'dice part of a brelan'};
                     }
+                    //else it means you want to put it in the reserve
                 } else {
                     var br = this.brelan(index);
                     var st = this.straight();
@@ -292,7 +290,7 @@ module.exports = class {
                         if (st.in) response.tip = 'straight available, 1 & 5 priority';
                         if (this.deubeul) response.tip = 'deubeul successful! roll again';
 
-                        response = {can: true, reserve: this.reserve};
+                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
 
                     } else if (br.in) {
                         this.brelanType = this.dices[index];
@@ -301,12 +299,12 @@ module.exports = class {
 
                         this.potentialScore += this.getScore(this.dices[index], false);
 
-                        response = {can: true, reserve: this.reserve};
+                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
                     } else if (st.in) {
                         this.reserve.fill(true);
                         this.inStraight = true;
                         this.potentialScore += this.getScore('straight');
-                        response = {can: true, reserve: this.reserve};
+                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
                     } else {
                         if (this.deubeul) {
                             this.potentialScore = 0;
@@ -324,12 +322,6 @@ module.exports = class {
         }
 
         if (response.can) response.potentialScore = this.potentialScore;
-
-        console.log('dices:', this.dices);
-        console.log('reserve:', this.reserve);
-        console.log('brelan:', this.inBrelan);
-        console.log('brelan type:', this.brelanType);
-        console.log('final:', this.potentialScore);
 
         return response;
     }
