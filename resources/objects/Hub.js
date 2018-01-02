@@ -7,10 +7,6 @@ module.exports = class {
     }
 
     requestHandler(name, id) {
-        // Does the socket room already exist? If it's empty and the room existed before then delete it
-        if (!this.io.sockets.adapter.rooms[id] && this.rooms[id]) {
-            delete this.rooms[id];
-        }
         // Does the room already exist?
         if (this.rooms[id]) {
             // Yes it does: is the requested player in that room?
