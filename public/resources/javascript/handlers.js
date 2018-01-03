@@ -72,21 +72,22 @@ function updateIntersected() {
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children, true);
 
-    intersected = intersects.length > 0 ? intersects[0].object : undefined;
-    var i = 0;
-    if (intersected) {
-        while (intersected.isSprite && i < 5) {
-            i++;
-            intersected = intersects[i].object;
-        }
+    intersected = undefined;
+    for (var i in intersects) {
+        intersected = intersects[i].object;
+        if (!intersected.noSelect) break;
     }
 
     if (intersected) {
         if (latest) if (latest.setEmissive) latest.setEmissive({r: 0, g: 0, b: 0});
         latest = intersected;
-         if (intersected.setEmissive) intersected.setEmissive(emission);
+        if (intersected.setEmissive) {
+            intersected.setEmissive(emission);
+            $('html,body').css('cursor', 'pointer');
+        } else $('html,body').css('cursor', 'default');
     } else {
         if (latest) if (latest.setEmissive) latest.setEmissive({r: 0, g: 0, b: 0});
+        $('html,body').css('cursor', 'default');
     }
 }
 

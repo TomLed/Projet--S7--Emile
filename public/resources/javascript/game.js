@@ -10,6 +10,7 @@ var light1, light2, ambient, ground;
 var socket;
 var player;
 var opponents = {};
+var currentName;
 
 var dices = new Array(5).fill(undefined);
 var coordinates = [];
@@ -42,7 +43,7 @@ function initGame() {
     light1 = new PointLight(0, 2, -1, 0xffaa88);
     scene.add(light1);
 
-    light2 = new PointLight(0, 2, 1, 0x88aaff);
+    light2 = new PointLight(0, 2, 1, 0x6688ee);
     scene.add(light2);
 
     ambient = new THREE.AmbientLight(0x88aaff, .7);

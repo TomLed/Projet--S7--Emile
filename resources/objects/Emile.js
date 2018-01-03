@@ -250,77 +250,79 @@ module.exports = class {
         var response = {};
 
         if (player == this.currentPlayer) {
-            if (this.dices[index]) {
-                //If the clicked dice is already in reserve, reset the reserve and put it out
-                if (this.reserve[index]) {
-                    if (this.inStraight) {
-                        this.potentialScore -= this.getScore('straight', false);
-                        this.inStraight = false;
-                        this.reserve.fill(false);
-                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
-                    } else if (!this.inBrelan[index]) {
-                        this.reserve[index] = false;
+            if (!this.stuck) {
+                if (this.dices[index]) {
+                    //If the clicked dice is already in reserve, reset the reserve and put it out
+                    if (this.reserve[index]) {
+                        if (this.inStraight) {
+                            this.potentialScore -= this.getScore('straight', false);
+                            this.inStraight = false;
+                            this.reserve.fill(false);
+                            response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
+                        } else if (!this.inBrelan[index]) {
+                            this.reserve[index] = false;
 
-                        if (this.deubeul) this.potentialScore /= 2;
-                        this.potentialScore -= this.getScore(this.dices[index], false);
+                            if (this.deubeul) this.potentialScore /= 2;
+                            this.potentialScore -= this.getScore(this.dices[index], false);
 
-                        if (this.dices[index] == 5) this.brelanFives--;
-                        if (this.dices[index] == 1) this.brelanOnes--;
-                        if (this.dices[index] == this.brelanType) {
-                            for (var i in this.dices) {
-                                if (this.reserve[i] && this.dices[i] == this.brelanType) this.reserve[i] = false;
+                            if (this.dices[index] == 5) this.brelanFives--;
+                            if (this.dices[index] == 1) this.brelanOnes--;
+                            if (this.dices[index] == this.brelanType) {
+                                for (var i in this.dices) {
+                                    if (this.reserve[i] && this.dices[i] == this.brelanType) this.reserve[i] = false;
+                                }
+                                this.brelanType = 0;
                             }
-                            this.brelanType = 0;
-                        }
 
-                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
+                            response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
+                        } else {
+                            response = {can: false, reason: 'dice part of a brelan'};
+                        }
+                        //else it means you want to put it in the reserve
                     } else {
-                        response = {can: false, reason: 'dice part of a brelan'};
+                        var br = this.brelan(index);
+                        var st = this.straight();
+
+                        // To change priority of combinations, juste change the order in the following if else if
+                        if (this.dices[index] == 5 || this.dices[index] == 1) {
+
+                            this.reserve[index] = true;
+
+                            this.potentialScore += this.getScore(this.dices[index], true);
+                            if (this.deubeul) this.potentialScore *= 2;
+
+                            if (br.in) response.tip = 'brelan available, 1 & 5 priority';
+                            if (st.in) response.tip = 'straight available, 1 & 5 priority';
+                            if (this.deubeul) response.tip = 'deubeul successful! roll again';
+
+                            response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
+
+                        } else if (br.in) {
+                            this.brelanType = this.dices[index];
+
+                            for (var i in br.pos) this.reserve[i] = br.pos[i];
+
+                            this.potentialScore += this.getScore(this.dices[index], false);
+
+                            response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
+                        } else if (st.in) {
+                            this.reserve.fill(true);
+                            this.inStraight = true;
+                            this.potentialScore += this.getScore('straight');
+                            response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
+                        } else {
+                            if (this.deubeul) {
+                                this.potentialScore = 0;
+                                this.deubeul = false;
+                            }
+
+                            response = {can: false, reason: 'not a marking dice'};
+                        }
                     }
-                    //else it means you want to put it in the reserve
                 } else {
-                    var br = this.brelan(index);
-                    var st = this.straight();
-
-                    // To change priority of combinations, juste change the order in the following if else if
-                    if (this.dices[index] == 5 || this.dices[index] == 1) {
-
-                        this.reserve[index] = true;
-
-                        this.potentialScore += this.getScore(this.dices[index], true);
-                        if (this.deubeul) this.potentialScore *= 2;
-
-                        if (br.in) response.tip = 'brelan available, 1 & 5 priority';
-                        if (st.in) response.tip = 'straight available, 1 & 5 priority';
-                        if (this.deubeul) response.tip = 'deubeul successful! roll again';
-
-                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
-
-                    } else if (br.in) {
-                        this.brelanType = this.dices[index];
-
-                        for (var i in br.pos) this.reserve[i] = br.pos[i];
-
-                        this.potentialScore += this.getScore(this.dices[index], false);
-
-                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
-                    } else if (st.in) {
-                        this.reserve.fill(true);
-                        this.inStraight = true;
-                        this.potentialScore += this.getScore('straight');
-                        response = {can: true, reserve: this.reserve, potentialScore: this.potentialScore};
-                    } else {
-                        if (this.deubeul) {
-                            this.potentialScore = 0;
-                            this.deubeul = false;
-                        }
-
-                        response = {can: false, reason: 'not a marking dice'};
-                    }
+                    response = {can: false, reason: 'dices not rolled yet'};
                 }
-            } else {
-                response = {can: false, reason: 'dices not rolled yet'};
-            }
+            } else response = {can: false, reason: 'you are stuck'};
         } else {
             response = {can: false, reason: 'not your turn'};
         }

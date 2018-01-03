@@ -78,3 +78,7 @@ function onDocumentKeyDown(event) {
     case 32: rollDices(); break;
     }
 }
+
+$('#back-button').on('click', function(event) {
+    window.location = window.location.origin + '/join';
+});

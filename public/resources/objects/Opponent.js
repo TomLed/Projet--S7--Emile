@@ -4,7 +4,7 @@ class Opponent extends THREE.Group {
         super();
         this.nickname = nickname;
         this.index = index;
-        this.score = score;
+        this.value = score;
         this.look = new THREE.Vector3();
         this.lookAt(scene.position);
 
@@ -46,9 +46,6 @@ class Opponent extends THREE.Group {
         }
 
         this.add(this.tix);
-
-        this.score.value = score;
-        this.name.value = name;
     }
 
     setCanvas(text, color, height, type) {
@@ -100,13 +97,14 @@ class Opponent extends THREE.Group {
         this.lookAt(this.look);
     }
 
-    updateScore(score){
+    updateScore(score) {
+        this.value = score;
         this.score.material.map = new THREE.Texture(this.setCanvas(score));
         this.score.material.map.needsUpdate = true;
         this.score.material.map.anisotropy = 8;
     }
 
-    updateName(name){
+    updateName(name) {
         this.name.material.map = new THREE.Texture(this.setCanvas(name));
         this.name.material.map.needsUpdate = true;
         this.name.material.map.anisotropy = 8;

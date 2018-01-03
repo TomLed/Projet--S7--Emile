@@ -2,7 +2,7 @@ class Sprite extends THREE.Sprite {
     constructor() {
         var spriteMat = new THREE.SpriteMaterial();
         super(spriteMat);
-        this.isSprite = true;
+        this.noSelect = true;
 
         this.cv = document.createElement('canvas');
         this.cv.width = 128;
@@ -18,10 +18,25 @@ class Dice extends THREE.Group {
     constructor(index) {
         super();
         this.index = index;
-        this.position.set(0,-1,0);
+
+        var cookie, content;
+
+        cookie = Cookies.get('positions');
+        if (cookie) content = JSON.parse(cookie);
+
+        if (content.positions) {
+            if (content.positions[index]) {
+                this.position.copy(content.positions[index].p);
+                this.quaternion.copy(content.positions[index].q);
+            }
+        } else {
+            this.position.set(0,-1,0);
+        }
         this.positionInReserve = undefined;
 
-        this.value = undefined;
+        cookie = Cookies.get('values');
+        if (cookie) content = JSON.parse(cookie);
+        this.value = content.faces ? content.faces[index] : undefined;
         this.reserve = false;
 
         var cubeGeo = this.setGeo(.1, .005);
@@ -150,17 +165,28 @@ class Dice extends THREE.Group {
 
         if (reserve != this.reserve) {
             this.reserve = reserve;
+            if (player) {
+                if (player.name == currentName) var destination = camera;
+                else var destination = opponents[currentName];
+            } else var destination = camera;
+
             if (reserve) {
+
                 for (var i in ui.inReserve) {
                     if (!ui.inReserve[i]) {
                         ui.inReserve[i] = this.reserve;
                         this.positionInReserve = i;
 
                         THREE.SceneUtils.detach(this.cube, this, scene);
-                        THREE.SceneUtils.attach(this.cube, scene, camera);
+                        THREE.SceneUtils.attach(this.cube, scene, destination);
 
-                        this.cube.position.set(-.2+.1*i, -.28, -.5);
-                        this.cube.scale.set(.4, .4, .4);
+                        if (destination == camera) {
+                            this.cube.position.set(-.2+.1*i, -.28, -.5);
+                            this.cube.scale.set(.4, .4, .4);
+                        } else {
+                            this.cube.position.set((-.2+.1*i)*1.5, -.025, .1);
+                            this.cube.scale.set(.6, .6, .6);
+                        }
                         this.showFace();
 
                         break;
@@ -169,7 +195,7 @@ class Dice extends THREE.Group {
             } else {
                 ui.inReserve[this.positionInReserve] = this.reserve;
 
-                THREE.SceneUtils.detach(this.cube, camera, scene);
+                THREE.SceneUtils.detach(this.cube, destination, scene);
                 THREE.SceneUtils.attach(this.cube, scene, this);
 
                 this.cube.position.set(0, 0, 0);
